@@ -1,0 +1,129 @@
+# =========================================================
+# 1. 비밀정보 / 자격증명 (가장 중요)
+# =========================================================
+# 환경변수 파일 (DATABASE_URL, API 키 등)
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+
+# 자격증명 / 키 파일
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.jks
+*.keystore
+credentials.json
+secrets.json
+service-account*.json
+*-credentials.json
+
+# 클라우드 / CLI 설정
+.aws/
+.gcloud/
+.azure/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+
+# =========================================================
+# 2. Python (FastAPI 백엔드)
+# =========================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 패키징 / 빌드
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+pip-wheel-metadata/
+
+# 가상환경
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# 테스트 / 커버리지
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# 타입 체커 / 린터 캐시
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.pytype/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# =========================================================
+# 3. Node / Frontend (추후 사용 대비)
+# =========================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.next/
+.nuxt/
+.svelte-kit/
+.turbo/
+out/
+
+# =========================================================
+# 4. IDE / 에디터 개인 설정
+# =========================================================
+# VSCode / Cursor 개인 설정 (공유 설정은 살리기)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.cursor/
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+
+# Obsidian 개인 워크스페이스 상태
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+.obsidian/graph.json
+
+# =========================================================
+# 5. OS 생성 파일
+# =========================================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# =========================================================
+# 6. 로그 / 임시 파일
+# =========================================================
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+*.bak
