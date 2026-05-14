@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, File, UploadFile, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 
 from sqlalchemy import text
@@ -9,6 +10,18 @@ from database import get_db
 
 
 app = FastAPI(title="Main App")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+_TITANIC_CSV_PATH = (
+    Path(__file__).resolve().parent / "titanic" / "app" / "titanic_dataset.csv"
+)
 
 @app.get("/")
 def read_root():
@@ -70,6 +83,21 @@ def train_titanic_tree():
 def read_titanic_model():
     james = James()
     return {"model": james.get_current_model_name()}
+
+@app.post("/titanic/upload")
+async def upload_titanic_csv(file: UploadFile = File(...)):
+    if not file.filename or not file.filename.lower().endswith(".csv"):
+        raise HTTPException(status_code=400, detail="CSV 파일만 업로드할 수 있습니다.")
+
+    _TITANIC_CSV_PATH.parent.mkdir(parents=True, exist_ok=True)
+    contents = await file.read()
+    _TITANIC_CSV_PATH.write_bytes(contents)
+
+    return {
+        "filename": file.filename,
+        "saved_path": str(_TITANIC_CSV_PATH),
+        "size": len(contents),
+    }
 
 @app.get("/doro/data")
 def read_doro_data():
