@@ -1,8 +1,11 @@
 from fastapi import FastAPI, Depends, File, UploadFile, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
+import logging
+import sys
 
 import google.generativeai as genai
+from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,9 +13,12 @@ from matrix.app.keymaker import ChatRequest, keymaker
 from titanic.app.james_controller import James
 from database import get_db
 from weather_service import fetch_current_weather
+from secom.app.schemas.user_schema import UserSchema, UserLoginSchema
+from secom.app.controllers.user_controller import UserController
 
 
 app = FastAPI(title="Main App")
+logger = logging.getLogger("uvicorn.error")
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,6 +31,36 @@ app.add_middleware(
 _TITANIC_CSV_PATH = (
     Path(__file__).resolve().parent / "titanic" / "app" / "titanic_dataset.csv"
 )
+
+
+class LoginRequest(BaseModel):
+    id: str
+    password: str
+
+
+class SignupRequest(BaseModel):
+    id: str
+    password: str
+    nickname: str
+    email: str
+
+#프론트엔드에서 가져온 데이터를 스키마에 담아서 DB 로 보냄
+@app.post("/signup")
+def signup(req: SignupRequest):
+    user_schema = UserSchema(
+        id=req.id,
+        password=req.password,
+        nickname=req.nickname,
+        email=req.email,
+        role="user",
+    )
+
+    user_controller = UserController()
+    user_controller.save_user(user_schema)
+
+    data = user_schema.model_dump()
+    logger.warning("[회원가입 요청] %s", data)
+    return {"ok": True, "data": data}
 
 @app.get("/")
 def read_root():
@@ -87,6 +123,15 @@ def chat(req: ChatRequest):
         raise
     except Exception as e:
         raise HTTPException(status_code=502, detail=str(e)) from e
+
+
+@app.post("/login")
+def login(req: LoginRequest):
+    data = req.model_dump()
+    logger.warning("[로그인 요청] %s", data)
+    print(f"[로그인 요청] {data}", file=sys.stderr, flush=True)
+    return {"ok": True, "message": "로그인 요청이 정상적으로 전달되었습니다.", "data": req.model_dump()}
+
 
 @app.get("/db-check")
 async def check_db(db: AsyncSession = Depends(get_db)):
