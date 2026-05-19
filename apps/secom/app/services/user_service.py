@@ -1,23 +1,17 @@
 import logging
-import sys
 
-from secom.app.schemas.user_schema import UserSchema
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from secom.app.repositories.user_repository import UserRepository
+from secom.app.schemas.user_schema import UserSchema
 
-logger = logging.getLogger("uvicorn.error")
-
-
-def _log_layer(layer: str, user_schema: UserSchema):
-    data = user_schema.model_dump()
-    logger.warning("[%s] save_user 통과: %s", layer, data)
-    print(f"[{layer}] save_user 통과: {data}", file=sys.stderr, flush=True)
+logger = logging.getLogger(__name__)
 
 
 class UserService:
-    def __init__(self):
-        pass
+    def __init__(self) -> None:
+        self.user_repository = UserRepository()
 
-    def save_user(self, user_schema: UserSchema):
-        _log_layer("UserService", user_schema)
-        user_repository = UserRepository()
-        user_repository.save_user(user_schema)
+    async def save_user(self, session: AsyncSession, user_schema: UserSchema) -> None:
+        await self.user_repository.save_user(session, user_schema)
+        logger.info("[UserService] save_user 레이어 완료 — userId=%s", user_schema.id)

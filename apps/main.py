@@ -11,7 +11,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from matrix.app.keymaker import ChatRequest, keymaker
 from titanic.app.james_controller import James
-from database import get_db
+from database import get_db, init_db
+from secom.app.models import user_model  # noqa: F401 — Base.metadata에 User 등록
 from weather_service import fetch_current_weather
 from secom.app.schemas.user_schema import UserSchema, UserLoginSchema
 from secom.app.controllers.user_controller import UserController
@@ -19,6 +20,11 @@ from secom.app.controllers.user_controller import UserController
 
 app = FastAPI(title="Main App")
 logger = logging.getLogger("uvicorn.error")
+
+
+@app.on_event("startup")
+async def on_startup() -> None:
+    await init_db()
 
 app.add_middleware(
     CORSMiddleware,
@@ -44,9 +50,8 @@ class SignupRequest(BaseModel):
     nickname: str
     email: str
 
-#프론트엔드에서 가져온 데이터를 스키마에 담아서 DB 로 보냄
 @app.post("/signup")
-def signup(req: SignupRequest):
+async def signup(req: SignupRequest, db: AsyncSession = Depends(get_db)):
     user_schema = UserSchema(
         id=req.id,
         password=req.password,
@@ -54,13 +59,22 @@ def signup(req: SignupRequest):
         email=req.email,
         role="user",
     )
-
-    user_controller = UserController()
-    user_controller.save_user(user_schema)
-
-    data = user_schema.model_dump()
-    logger.warning("[회원가입 요청] %s", data)
-    return {"ok": True, "data": data}
+    try:
+        await UserController().save_user(db, user_schema)
+    except ValueError as e:
+        msg = str(e)
+        if msg == "duplicate":
+            raise HTTPException(
+                status_code=409,
+                detail="이미 존재하는 아이디 또는 이메일입니다.",
+            ) from e
+        if msg == "schema":
+            raise HTTPException(
+                status_code=500,
+                detail="DB 테이블 스키마가 맞지 않습니다. 서버를 재시작해 주세요.",
+            ) from e
+        raise HTTPException(status_code=500, detail=msg) from e
+    return {"ok": True, "data": user_schema.model_dump()}
 
 @app.get("/")
 def read_root():
@@ -127,10 +141,8 @@ def chat(req: ChatRequest):
 
 @app.post("/login")
 def login(req: LoginRequest):
-    data = req.model_dump()
-    logger.warning("[로그인 요청] %s", data)
-    print(f"[로그인 요청] {data}", file=sys.stderr, flush=True)
-    return {"ok": True, "message": "로그인 요청이 정상적으로 전달되었습니다.", "data": req.model_dump()}
+    logger.info("[login] 요청 — userId=%s", req.id)
+    return {"ok": True, "data": req.model_dump()}
 
 
 @app.get("/db-check")
