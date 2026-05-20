@@ -1,8 +1,19 @@
+"""FastAPI 앱.
+
+Windows + psycopg(async): ProactorEventLoop와 호환되지 않는다.
+- asyncio 정책 설정(일부 경로용)
+- 파일 하단에서 uvicorn이 고르는 루프 팩토리를 SelectorEventLoop로 패치(단일 워커·reload 없음 시 필요)
+"""
+import asyncio
+import sys
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 from fastapi import FastAPI, Depends, File, UploadFile, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import logging
-import sys
 
 import google.generativeai as genai
 from pydantic import BaseModel
@@ -223,6 +234,24 @@ def read_doro_data():
     df = doro_director.get_data()
 
     return df.to_dict(orient="records")
+
+
+# --- Windows: uvicorn이 단일 프로세스에서 ProactorEventLoop를 쓰면 psycopg async가 실패한다. ---
+# get_loop_factory() 호출 시점 이전에 모듈이 로드되므로, import 직후 패치한다.
+if sys.platform == "win32":
+    try:
+        import uvicorn.loops.asyncio as _uvicorn_loops_asyncio
+
+        def _asyncio_loop_factory_win_psycopg(
+            use_subprocess: bool = False,
+        ) -> type[asyncio.AbstractEventLoop]:
+            _ = use_subprocess
+            return asyncio.SelectorEventLoop
+
+        _uvicorn_loops_asyncio.asyncio_loop_factory = _asyncio_loop_factory_win_psycopg  # type: ignore[method-assign]
+    except ImportError:
+        pass
+
 
 if __name__ == "__main__":
     import os
