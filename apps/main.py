@@ -21,7 +21,8 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from matrix.app.keymaker import ChatRequest, keymaker
-from titanic.app.james_controller import James
+from titanic.app.controllers.titanic_controller import TitanicController
+from titanic.app.repositories.titanic_repository import TitanicRepository
 from database import get_db, init_db
 from secom.app.models import user_model  # noqa: F401 — Base.metadata에 User 등록
 from weather_service import fetch_current_weather
@@ -45,9 +46,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-_TITANIC_CSV_PATH = (
-    Path(__file__).resolve().parent / "titanic" / "app" / "titanic_dataset.csv"
-)
+_TITANIC_CSV_PATH = TitanicRepository.CSV_PATH
 
 
 class LoginRequest(BaseModel):
@@ -165,53 +164,54 @@ async def check_db(db: AsyncSession = Depends(get_db)):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+@app.get("/titanic/info")
+def read_titanic_info():
+    controller = TitanicController()
+    return controller.get_dataset_info()
+
+
 @app.get("/titanic/data")
 def read_titanic_data():
-    james = James()
-    df = james.get_data()
-
+    controller = TitanicController()
+    df = controller.get_data()
     return df.to_dict(orient="records")
+
 
 @app.get("/titanic/count")
 def read_titanic_count():
-    james = James()
-    count = james.get_count()
+    controller = TitanicController()
+    return {"count": controller.get_count()}
 
-    return {"count": count}
 
 @app.get("/titanic/count/survived")
 def read_titanic_survived_count():
-    james = James()
-    count = james.get_survived_count()
+    controller = TitanicController()
+    return {"count": controller.get_survived_count()}
 
-    return {"count": count}
 
 @app.get("/titanic/count/dead")
 def read_titanic_dead_count():
-    james = James()
-    count = james.get_dead_count()
+    controller = TitanicController()
+    return {"count": controller.get_dead_count()}
 
-    return {"count": count}
 
 @app.get("/titanic/tree")
 def read_titanic_tree():
-    james = James()
-    tree = james.has_decision_tree_model()
+    controller = TitanicController()
+    return {"tree": controller.has_decision_tree_model()}
 
-    return {"tree": tree}
 
 @app.post("/titanic/tree/train")
 def train_titanic_tree():
-    james = James()
-    model_path = james.train_decision_tree_model()
-
-    return {"trained": True, "model_path": model_path}
+    controller = TitanicController()
+    model_path = controller.train_decision_tree_model()
+    return {"trained": True, "model_path": str(model_path)}
 
 
 @app.get("/titanic/model")
 def read_titanic_model():
-    james = James()
-    return {"model": james.get_current_model_name()}
+    controller = TitanicController()
+    return {"model": controller.get_current_model_name()}
 
 @app.post("/titanic/upload")
 async def upload_titanic_csv(file: UploadFile = File(...)):
