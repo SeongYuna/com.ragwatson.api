@@ -10,7 +10,13 @@ import sys
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-from fastapi import FastAPI, Depends, File, UploadFile, HTTPException, Query
+# backend/ 디렉터리를 sys.path에 추가 (core.database 등 core 패키지 접근용)
+from pathlib import Path as _Path
+_BACKEND_DIR = str(_Path(__file__).resolve().parent.parent)
+if _BACKEND_DIR not in sys.path:
+    sys.path.insert(0, _BACKEND_DIR)
+
+from fastapi import FastAPI, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import logging
@@ -20,17 +26,24 @@ from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from matrix.app.keymaker import ChatRequest, keymaker
-from titanic.app.controllers.titanic_controller import TitanicController
-from titanic.app.repositories.titanic_repository import TitanicRepository
-from database import get_db, init_db
-from secom.app.models import user_model  # noqa: F401 — Base.metadata에 User 등록
+from matrix_API_key.app.keymaker import ChatRequest, keymaker
+from titanic_m_learning.adapter.inbound.api.v1.james_cmd_router import james_cmd_router
+from titanic_m_learning.adapter.inbound.api.v1.walter_query_router import walter_query_router
+from titanic_m_learning.adapter.outbound.orm import titanic_orm  # noqa: F401 — Base.metadata에 TitanicPassengerORM 등록
+from core.database import get_db, init_db
+from gateway_friday_13th.app.models import user_model  # noqa: F401 — Base.metadata에 User 등록
 from weather_service import fetch_current_weather
-from secom.app.schemas.user_schema import UserSchema, UserLoginSchema
-from secom.app.controllers.user_controller import UserController
+from gateway_friday_13th.app.schemas.user_schema import UserSchema, UserLoginSchema
+from gateway_friday_13th.app.controllers.user_controller import UserController
 
 
 app = FastAPI(title="Main App")
+
+# 임시: titanic 계층별 흐름 추적 로그
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+logging.getLogger("titanic.write").setLevel(logging.INFO)
+logging.getLogger("titanic.read").setLevel(logging.INFO)
+
 logger = logging.getLogger("uvicorn.error")
 
 
@@ -46,8 +59,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-_TITANIC_CSV_PATH = TitanicRepository.CSV_PATH
-
+app.include_router(james_cmd_router)
+app.include_router(walter_query_router)
 
 class LoginRequest(BaseModel):
     id: str
@@ -163,77 +176,6 @@ async def check_db(db: AsyncSession = Depends(get_db)):
         return {"status": "success", "neon_time": now}
     except Exception as e:
         return {"status": "error", "message": str(e)}
-
-@app.get("/titanic/info")
-def read_titanic_info():
-    controller = TitanicController()
-    return controller.get_dataset_info()
-
-
-@app.get("/titanic/data")
-def read_titanic_data():
-    controller = TitanicController()
-    df = controller.get_data()
-    return df.to_dict(orient="records")
-
-
-@app.get("/titanic/count")
-def read_titanic_count():
-    controller = TitanicController()
-    return {"count": controller.get_count()}
-
-
-@app.get("/titanic/count/survived")
-def read_titanic_survived_count():
-    controller = TitanicController()
-    return {"count": controller.get_survived_count()}
-
-
-@app.get("/titanic/count/dead")
-def read_titanic_dead_count():
-    controller = TitanicController()
-    return {"count": controller.get_dead_count()}
-
-
-@app.get("/titanic/tree")
-def read_titanic_tree():
-    controller = TitanicController()
-    return {"tree": controller.has_decision_tree_model()}
-
-
-@app.post("/titanic/tree/train")
-def train_titanic_tree():
-    controller = TitanicController()
-    model_path = controller.train_decision_tree_model()
-    return {"trained": True, "model_path": str(model_path)}
-
-
-@app.get("/titanic/model")
-def read_titanic_model():
-    controller = TitanicController()
-    return {"model": controller.get_current_model_name()}
-
-@app.post("/titanic/upload")
-async def upload_titanic_csv(file: UploadFile = File(...)):
-    if not file.filename or not file.filename.lower().endswith(".csv"):
-        raise HTTPException(status_code=400, detail="CSV 파일만 업로드할 수 있습니다.")
-
-    _TITANIC_CSV_PATH.parent.mkdir(parents=True, exist_ok=True)
-    contents = await file.read()
-    _TITANIC_CSV_PATH.write_bytes(contents)
-
-    return {
-        "filename": file.filename,
-        "saved_path": str(_TITANIC_CSV_PATH),
-        "size": len(contents),
-    }
-
-@app.get("/doro/data")
-def read_doro_data():
-    doro_director = DoroDirector()
-    df = doro_director.get_data()
-
-    return df.to_dict(orient="records")
 
 
 # --- Windows: uvicorn이 단일 프로세스에서 ProactorEventLoop를 쓰면 psycopg async가 실패한다. ---
