@@ -1,30 +1,7 @@
-import logging
-
-from titanic.app.models.titanic_passenger import COLUMN_SPECS
-from titanic.app.repositories.titanic_model_repository import TitanicModelRepository
-from titanic.app.schemas.titanic_schema import TitanicColumnDocSchema, TitanicDatasetInfoSchema
-
-logger = logging.getLogger(__name__)
+from titanic_m_learning.app.ports.input.jack_use_case import JackUseCase
+from titanic_m_learning.domain.entities.titanic import TitanicPassenger
 
 
-class TitanicService:
-    def __init__(self) -> None:
-        self.model_repository = TitanicModelRepository()
-
-    def has_decision_tree_model(self) -> bool:
-        return self.model_repository.has_model()
-
-    def get_current_model_name(self) -> str | None:
-        return self.model_repository.get_model_name()
-
-    def get_dataset_info(self) -> TitanicDatasetInfoSchema:
-        return TitanicDatasetInfoSchema(
-            columns=[
-                TitanicColumnDocSchema(
-                    name=spec.name,
-                    description=spec.description,
-                    role=spec.role,
-                )
-                for spec in COLUMN_SPECS
-            ],
-        )
+class JackQuery(JackUseCase):
+    async def find_by_id(self, passenger_id: str) -> TitanicPassenger:
+        raise NotImplementedError("Jack 승객 단건 조회는 아직 구현되지 않았습니다.")

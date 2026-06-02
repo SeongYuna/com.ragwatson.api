@@ -27,14 +27,12 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from matrix_API_key.app.keymaker import ChatRequest, keymaker
-from titanic_m_learning.adapter.inbound.api.v1.james_cmd_router import james_cmd_router
-from titanic_m_learning.adapter.inbound.api.v1.walter_query_router import walter_query_router
+from titanic_m_learning.adapter.inbound.api import titanic_router
 from titanic_m_learning.adapter.outbound.orm import titanic_orm  # noqa: F401 — Base.metadata에 TitanicPassengerORM 등록
 from core.database import get_db, init_db
-from gateway_friday_13th.app.models import user_model  # noqa: F401 — Base.metadata에 User 등록
+from gateway_friday_13th.adapter.inbound.api.v1.user_cmd_router import user_cmd_router
+from gateway_friday_13th.adapter.outbound.orm import user_orm  # noqa: F401 — Base.metadata에 UserORM 등록
 from weather_service import fetch_current_weather
-from gateway_friday_13th.app.schemas.user_schema import UserSchema, UserLoginSchema
-from gateway_friday_13th.app.controllers.user_controller import UserController
 
 
 app = FastAPI(title="Main App")
@@ -59,45 +57,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(james_cmd_router)
-app.include_router(walter_query_router)
+app.include_router(titanic_router)
+app.include_router(user_cmd_router)
+
 
 class LoginRequest(BaseModel):
     id: str
     password: str
-
-
-class SignupRequest(BaseModel):
-    id: str
-    password: str
-    nickname: str
-    email: str
-
-@app.post("/signup")
-async def signup(req: SignupRequest, db: AsyncSession = Depends(get_db)):
-    user_schema = UserSchema(
-        id=req.id,
-        password=req.password,
-        nickname=req.nickname,
-        email=req.email,
-        role="user",
-    )
-    try:
-        await UserController().save_user(db, user_schema)
-    except ValueError as e:
-        msg = str(e)
-        if msg == "duplicate":
-            raise HTTPException(
-                status_code=409,
-                detail="이미 존재하는 아이디 또는 이메일입니다.",
-            ) from e
-        if msg == "schema":
-            raise HTTPException(
-                status_code=500,
-                detail="DB 테이블 스키마가 맞지 않습니다. 서버를 재시작해 주세요.",
-            ) from e
-        raise HTTPException(status_code=500, detail=msg) from e
-    return {"ok": True, "data": user_schema.model_dump()}
 
 @app.get("/")
 def read_root():

@@ -5,10 +5,7 @@ import logging
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 
 from titanic_m_learning.adapter.inbound.api.dependencies import get_james_cmd_use_case
-from titanic_m_learning.adapter.inbound.api.mappers.titanic_mapper import (
-    requests_to_passengers,
-    upload_result_to_response,
-)
+from titanic_m_learning.adapter.inbound.api.mappers.titanic_mapper import upload_result_to_response
 from titanic_m_learning.adapter.inbound.api.schemas.titanic_request import TitanicPassengerRequest
 from titanic_m_learning.adapter.inbound.api.schemas.titanic_response import TitanicUploadResponse
 from titanic_m_learning.app.ports.input.james_cmd_use_case import JamesCmdUseCase
@@ -54,16 +51,21 @@ async def upload_titanic_csv(
         len(requests),
         len(raw),
     )
-
-    passengers = requests_to_passengers(requests)
-
-    log.info(
-        "  ③ Input Port       │ JamesCmdUseCase      │ execute() 호출 │ Domain %d건 전달",
-        len(passengers),
-    )
+    log.info("  ① Inbound Adapter  │ james_cmd_router     │ CSV 상위 5행")
+    for index, req in enumerate(requests[:5], start=1):
+        log.info(
+            "    #%d │ id=%s name=%s pclass=%s survived=%s gender=%s age=%s",
+            index,
+            req.passenger_id,
+            req.name,
+            req.pclass,
+            req.survived,
+            req.gender,
+            req.age,
+        )
 
     try:
-        result = await use_case.execute(passengers)
+        result = await use_case.execute(requests)
     except Exception as exc:
         log.error("  ✗ WRITE 실패 — %s", exc)
         raise HTTPException(status_code=500, detail=f"서버 오류: {exc}") from exc

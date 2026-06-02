@@ -18,3 +18,20 @@ class TitanicPassengerResponse(BaseModel):
 
 class TitanicUploadResponse(BaseModel):
     count: int
+
+class TitanicStatsResponse(BaseModel):
+    total: int
+    survived: int
+    deceased: int
+    survival_rate: float
+
+
+class TitanicColumnResponse(BaseModel):
+    name: str
+    description: str
+    role: str
+
+
+class TitanicDatasetInfoResponse(BaseModel):
+    columns: list[TitanicColumnResponse]
+
