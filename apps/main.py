@@ -26,9 +26,10 @@ from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from matrix_API_key.app.keymaker import ChatRequest, keymaker
+from core.matrix_API_key.app.keymaker_api import ChatRequest, keymaker
 from titanic_m_learning.adapter.inbound.api import titanic_router
-from titanic_m_learning.adapter.outbound.orm import titanic_orm  # noqa: F401 — Base.metadata에 TitanicPassengerORM 등록
+from titanic_m_learning.adapter.outbound.orm import booking_orm  # noqa: F401 — Base.metadata
+from titanic_m_learning.adapter.outbound.orm import person_orm  # noqa: F401 — Base.metadata
 from core.database import get_db, init_db
 from gateway_friday_13th.adapter.inbound.api.v1.user_cmd_router import user_cmd_router
 from gateway_friday_13th.adapter.outbound.orm import user_orm  # noqa: F401 — Base.metadata에 UserORM 등록
@@ -36,11 +37,6 @@ from weather_service import fetch_current_weather
 
 
 app = FastAPI(title="Main App")
-
-# 임시: titanic 계층별 흐름 추적 로그
-logging.basicConfig(level=logging.INFO, format="%(message)s")
-logging.getLogger("titanic.write").setLevel(logging.INFO)
-logging.getLogger("titanic.read").setLevel(logging.INFO)
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -146,7 +142,7 @@ async def check_db(db: AsyncSession = Depends(get_db)):
 
 # --- Windows: uvicorn이 단일 프로세스에서 ProactorEventLoop를 쓰면 psycopg async가 실패한다. ---
 # get_loop_factory() 호출 시점 이전에 모듈이 로드되므로, import 직후 패치한다.
-if sys.platform == "win32":
+if sys.platform == "win32": 
     try:
         import uvicorn.loops.asyncio as _uvicorn_loops_asyncio
 

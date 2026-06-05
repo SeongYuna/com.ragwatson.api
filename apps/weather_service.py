@@ -8,7 +8,7 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 
-from matrix_API_key.app.keymaker import keymaker
+from core.matrix_API_key.app.keymaker_api import keymaker
 
 # 서울 기본값
 _DEFAULT_LAT = 37.5665

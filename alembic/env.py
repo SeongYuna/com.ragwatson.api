@@ -1,43 +1,49 @@
 from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+import os
+import sys
+from pathlib import Path
 
 from alembic import context
+from dotenv import load_dotenv
+from sqlalchemy import engine_from_config, pool
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
+_BACKEND_ROOT = Path(__file__).resolve().parents[1]
+_APPS_ROOT = _BACKEND_ROOT / "apps"
+sys.path.insert(0, str(_BACKEND_ROOT))
+sys.path.insert(0, str(_APPS_ROOT))
+
+load_dotenv(_BACKEND_ROOT / ".env")
+
+from core.database import Base  # noqa: E402
+from gateway_friday_13th.adapter.outbound.orm import user_orm  # noqa: F401, E402
+from titanic_m_learning.adapter.outbound.orm import booking_orm  # noqa: F401, E402
+from titanic_m_learning.adapter.outbound.orm import person_orm  # noqa: F401, E402
+
 config = context.config
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = Base.metadata
 
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
+
+def _sync_database_url() -> str:
+    raw = os.getenv("DATABASE_URL", "").strip()
+    if not raw:
+        raise RuntimeError("DATABASE_URL이 비어 있습니다. backend/.env를 확인하세요.")
+    if raw.startswith("postgres://"):
+        raw = "postgresql://" + raw.removeprefix("postgres://")
+    raw = raw.replace("postgresql+psycopg_async://", "postgresql+psycopg://")
+    raw = raw.replace("postgresql+asyncpg://", "postgresql+psycopg://")
+    if raw.startswith("postgresql://"):
+        raw = raw.replace("postgresql://", "postgresql+psycopg://", 1)
+    return raw
+
+
+config.set_main_option("sqlalchemy.url", _sync_database_url())
 
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode.
-
-    This configures the context with just a URL
-    and not an Engine, though an Engine is acceptable
-    here as well.  By skipping the Engine creation
-    we don't even need a DBAPI to be available.
-
-    Calls to context.execute() here emit the given string to the
-    script output.
-
-    """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
@@ -51,12 +57,6 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
-
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
-
-    """
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
@@ -64,9 +64,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

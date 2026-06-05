@@ -34,4 +34,3 @@ class TitanicColumnResponse(BaseModel):
 
 class TitanicDatasetInfoResponse(BaseModel):
     columns: list[TitanicColumnResponse]
-
