@@ -2,9 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class PersonQuery:
-    """Person 역정규화 조회 DTO. 모든 필드는 str."""
-
+class WalterPersonQuery:
     passenger_id: str
     name: str
     gender: str
@@ -15,9 +13,7 @@ class PersonQuery:
 
 
 @dataclass(frozen=True)
-class BookingQuery:
-    """Booking + Port(Country 제외) 역정규화 조회 DTO. 모든 필드는 str."""
-
+class WalterBookingQuery:
     pclass: str
     ticket: str
     fare: str
@@ -27,7 +23,26 @@ class BookingQuery:
 
 @dataclass(frozen=True)
 class WalterPassengerQuery:
-    """DB 1행 = PersonQuery + BookingQuery."""
+    person: WalterPersonQuery
+    booking: WalterBookingQuery
 
-    person: PersonQuery
-    booking: BookingQuery
+
+@dataclass(frozen=True)
+class WalterTableQueryResult:
+    passengers: list[WalterPassengerQuery]
+
+    @property
+    def count(self) -> int:
+        return len(self.passengers)
+
+@dataclass(frozen=True)
+class WalterIntroduceQuery:
+    id: int
+    name: str
+
+
+@dataclass(frozen=True)
+class WalterIntroduceResult:
+    id: int
+    name: str
+    message: str

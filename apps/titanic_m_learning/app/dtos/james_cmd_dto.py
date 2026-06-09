@@ -31,3 +31,20 @@ class JamesPassengerCommand:
 
     person: PersonCommand
     booking: BookingCommand
+
+
+@dataclass(frozen=True)
+class JamesUploadResult:
+    count: int
+
+@dataclass(frozen=True)
+class JamesIntroduceQuery:
+    id: int
+    name: str
+
+
+@dataclass(frozen=True)
+class JamesIntroduceResult:
+    id: int
+    name: str
+    message: str

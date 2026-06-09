@@ -6,6 +6,7 @@ from titanic_m_learning.adapter.outbound.mappers.james_orm_mapper import (
 )
 from titanic_m_learning.app.dtos.james_cmd_dto import JamesPassengerCommand
 from titanic_m_learning.app.ports.output.james_cmd_repository import JamesCmdRepository
+from titanic_m_learning.app.dtos.james_cmd_dto import JamesIntroduceQuery, JamesIntroduceResult
 
 
 class JamesCmdPgRepository(JamesCmdRepository):
@@ -23,3 +24,10 @@ class JamesCmdPgRepository(JamesCmdRepository):
         except Exception:
             await self._db.rollback()
             raise
+    async def introduce_myself(self, query: JamesIntroduceQuery) -> JamesIntroduceResult:
+        return JamesIntroduceResult(
+            id=query.id,
+            name=query.name,
+            message='James입니다. CSV 업로드로 승객 데이터를 DB에 적재합니다.',
+        )
+

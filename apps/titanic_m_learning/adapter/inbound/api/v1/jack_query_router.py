@@ -1,22 +1,37 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from titanic_m_learning.adapter.inbound.api.dependencies import get_jack_use_case
-from titanic_m_learning.adapter.inbound.api.mappers.walter_query_mapper import passenger_to_response
-from titanic_m_learning.adapter.inbound.api.schemas.titanic_response import TitanicPassengerResponse
+from titanic_m_learning.adapter.inbound.api.mappers.jack_query_mapper import query_to_response
+from titanic_m_learning.adapter.inbound.api.schemas.jack_query_schema import JackReadPassengerResponse
 from titanic_m_learning.app.ports.input.jack_use_case import JackUseCase
+from titanic_m_learning.adapter.inbound.api.schemas.jack_query_schema import JackIntroduceResponse, JackIntroduceSchema
 
 jack_query_router = APIRouter(prefix="/titanic/jack", tags=["/titanic/jack"])
 
 
-@jack_query_router.get("/passenger/{passenger_id}", response_model=TitanicPassengerResponse)
+@jack_query_router.get("/passenger/{passenger_id}", response_model=JackReadPassengerResponse)
 async def get_passenger_by_id(
     passenger_id: str,
     use_case: JackUseCase = Depends(get_jack_use_case),
-) -> TitanicPassengerResponse:
+) -> JackReadPassengerResponse:
     try:
-        passenger = await use_case.find_by_id(passenger_id)
+        query = await use_case.find_by_id(passenger_id)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except NotImplementedError as exc:
         raise HTTPException(status_code=501, detail=str(exc)) from exc
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"서버 오류: {exc}") from exc
-    return passenger_to_response(passenger)
+    return query_to_response(query)
+
+@jack_query_router.get("/myself", response_model=JackIntroduceResponse)
+async def introduce_myself(
+    use_case: JackUseCase = Depends(get_jack_use_case),
+) -> JackIntroduceResponse:
+    return await use_case.introduce_myself(
+        JackIntroduceSchema(
+            id=3,
+            name='Jack Dawson',
+        )
+    )
+

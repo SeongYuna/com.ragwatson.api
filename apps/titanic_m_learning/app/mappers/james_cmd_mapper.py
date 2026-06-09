@@ -1,4 +1,4 @@
-from titanic_m_learning.adapter.inbound.api.schemas.titanic_request import TitanicPassengerRequest
+from titanic_m_learning.adapter.inbound.api.schemas.james_cmd_schema import JamesWritePassengerRequest
 from titanic_m_learning.app.dtos.james_cmd_dto import (
     BookingCommand,
     JamesPassengerCommand,
@@ -6,7 +6,7 @@ from titanic_m_learning.app.dtos.james_cmd_dto import (
 )
 
 
-def request_to_command(req: TitanicPassengerRequest) -> JamesPassengerCommand:
+def request_to_command(req: JamesWritePassengerRequest) -> JamesPassengerCommand:
     return JamesPassengerCommand(
         person=PersonCommand(
             passenger_id=req.passenger_id,
@@ -27,5 +27,7 @@ def request_to_command(req: TitanicPassengerRequest) -> JamesPassengerCommand:
     )
 
 
-def requests_to_commands(requests: list[TitanicPassengerRequest]) -> list[JamesPassengerCommand]:
+def requests_to_commands(
+    requests: list[JamesWritePassengerRequest],
+) -> list[JamesPassengerCommand]:
     return [request_to_command(req) for req in requests]

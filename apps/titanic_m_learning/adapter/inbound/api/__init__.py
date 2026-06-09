@@ -6,6 +6,8 @@ from titanic_m_learning.adapter.inbound.api.v1.hartley_query_router import hartl
 from titanic_m_learning.adapter.inbound.api.v1.isador_query_router import isador_query_router
 from titanic_m_learning.adapter.inbound.api.v1.jack_query_router import jack_query_router
 from titanic_m_learning.adapter.inbound.api.v1.james_cmd_router import james_cmd_router
+from titanic_m_learning.adapter.inbound.api.v1.lowe_query_router import lowe_query_router
+from titanic_m_learning.adapter.inbound.api.v1.molly_query_router import molly_query_router
 from titanic_m_learning.adapter.inbound.api.v1.rose_query_router import rose_query_router
 from titanic_m_learning.adapter.inbound.api.v1.ruth_query_router import ruth_query_router
 from titanic_m_learning.adapter.inbound.api.v1.smith_query_router import smith_query_router
@@ -22,3 +24,5 @@ titanic_router.include_router(ruth_query_router)
 titanic_router.include_router(smith_query_router)
 titanic_router.include_router(isador_query_router)
 titanic_router.include_router(hartley_query_router)
+titanic_router.include_router(lowe_query_router)
+titanic_router.include_router(molly_query_router)

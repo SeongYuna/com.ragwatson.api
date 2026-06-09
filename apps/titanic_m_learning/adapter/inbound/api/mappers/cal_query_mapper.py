@@ -1,0 +1,11 @@
+from titanic_m_learning.adapter.inbound.api.schemas.cal_query_schema import CaledonReadStatsResponse
+from titanic_m_learning.app.dtos.caledon_dto import CaledonStatsResult
+
+
+def stats_to_response(result: CaledonStatsResult) -> CaledonReadStatsResponse:
+    return CaledonReadStatsResponse(
+        total=result.total,
+        survived=result.survived,
+        deceased=result.deceased,
+        survival_rate=result.survival_rate,
+    )

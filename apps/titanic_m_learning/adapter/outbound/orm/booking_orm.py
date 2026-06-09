@@ -22,3 +22,4 @@ class BookingORM(Base):
     embarked: Mapped[str]
 
     person: Mapped["PersonORM"] = relationship(back_populates="booking")
+ 

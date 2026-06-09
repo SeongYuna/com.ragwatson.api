@@ -1,0 +1,21 @@
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class SmithStatsResult:
+    total: int
+    survived: int
+    deceased: int
+    survival_rate: float
+
+@dataclass(frozen=True)
+class SmithIntroduceQuery:
+    id: int
+    name: str
+
+
+@dataclass(frozen=True)
+class SmithIntroduceResult:
+    id: int
+    name: str
+    message: str
