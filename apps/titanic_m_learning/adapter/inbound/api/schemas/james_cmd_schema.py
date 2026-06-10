@@ -4,20 +4,20 @@ from pydantic import BaseModel, Field
 
 
 class JamesWritePassengerRequest(BaseModel):
-    """CSV 1행. flat 12 fields, all str."""
+    """CSV 1행. flat fields, all str. train(Survived O) · test(Survived X) 모두 허용."""
 
     passenger_id: str = Field(alias="PassengerId")
-    survived: str = Field(alias="Survived")
-    pclass: str = Field(alias="Pclass")
-    name: str = Field(alias="Name")
-    gender: str = Field(alias="Sex")
-    age: str = Field(alias="Age")
-    sib_sp: str = Field(alias="SibSp")
-    parch: str = Field(alias="Parch")
-    ticket: str = Field(alias="Ticket")
-    fare: str = Field(alias="Fare")
-    cabin: str = Field(alias="Cabin")
-    embarked: str = Field(alias="Embarked")
+    survived: str = Field(default="", alias="Survived")
+    pclass: str = Field(default="", alias="Pclass")
+    name: str = Field(default="", alias="Name")
+    gender: str = Field(default="", alias="Sex")
+    age: str = Field(default="", alias="Age")
+    sib_sp: str = Field(default="0", alias="SibSp")
+    parch: str = Field(default="0", alias="Parch")
+    ticket: str = Field(default="", alias="Ticket")
+    fare: str = Field(default="", alias="Fare")
+    cabin: str = Field(default="", alias="Cabin")
+    embarked: str = Field(default="", alias="Embarked")
 
     model_config = {"populate_by_name": True}
 

@@ -31,4 +31,3 @@ async def introduce_myself(
             name='에드워드 스미스 (Edward Smith)',
         )
     )
-

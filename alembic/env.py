@@ -16,8 +16,7 @@ load_dotenv(_BACKEND_ROOT / ".env")
 
 from core.database import Base  # noqa: E402
 from gateway_friday_13th.adapter.outbound.orm import user_orm  # noqa: F401, E402
-from titanic_m_learning.adapter.outbound.orm import booking_orm  # noqa: F401, E402
-from titanic_m_learning.adapter.outbound.orm import person_orm  # noqa: F401, E402
+from titanic_m_learning.adapter.outbound.orm import BookingORM, PersonORM  # noqa: F401, E402
 
 config = context.config
 
