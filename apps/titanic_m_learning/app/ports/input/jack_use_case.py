@@ -1,7 +1,11 @@
 from abc import ABC, abstractmethod
 
-from titanic_m_learning.app.dtos.jack_dto import JackPassengerQuery
-from titanic_m_learning.adapter.inbound.api.schemas.jack_query_schema import JackIntroduceResponse, JackIntroduceSchema
+from titanic_m_learning.app.dtos.jack_dto import (
+    JackPassengerQuery,
+    JackTrainBundle,
+    JackIntroduceQuery,
+    JackIntroduceResult,
+)
 
 
 class JackUseCase(ABC):
@@ -11,7 +15,11 @@ class JackUseCase(ABC):
         ...
 
     @abstractmethod
-    async def introduce_myself(self, schema: JackIntroduceSchema) -> JackIntroduceResponse:
+    async def introduce_myself(self, query: JackIntroduceQuery) -> JackIntroduceResult:
         """Jack 자기소개."""
         ...
 
+    @abstractmethod
+    async def train_model(self) -> JackTrainBundle:
+        """로즈가 제안한 모델들을 훈련시키는 메소드."""
+        ...

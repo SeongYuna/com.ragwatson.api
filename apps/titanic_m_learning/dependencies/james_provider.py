@@ -10,14 +10,20 @@ DIP 원칙:
 from core.database import get_db
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from titanic_m_learning.adapter.outbound.pg.james_cmd_pg_repository import JamesCmdPgRepository
 from titanic_m_learning.app.ports.input.james_cmd_use_case import JamesCmdUseCase
 from titanic_m_learning.app.ports.output.james_cmd_repository import JamesCmdRepository
 from titanic_m_learning.app.use_cases.james_cmd_interactor import JamesCmdInteractor
 
 
+def get_james_cmd_repository(
+        db: AsyncSession = Depends(get_db)
+) -> JamesCmdRepository:
+    return JamesCmdPgRepository(session=db)
+
+
 def get_james_cmd_use_case(
-    db: AsyncSession = Depends(get_db),
+    repository: JamesCmdRepository = Depends(get_james_cmd_repository)
 ) -> JamesCmdUseCase:
-    repository: JamesCmdRepository = JamesCmdPgRepository(db=db)
     return JamesCmdInteractor(repository=repository)

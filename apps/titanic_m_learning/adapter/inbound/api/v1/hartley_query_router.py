@@ -4,7 +4,8 @@ from titanic_m_learning.adapter.inbound.api.dependencies import get_hartley_use_
 from titanic_m_learning.adapter.inbound.api.mappers.hartley_query_mapper import queries_to_responses
 from titanic_m_learning.adapter.inbound.api.schemas.hartley_query_schema import HartleyReadPassengerResponse
 from titanic_m_learning.app.ports.input.hartley_use_case import HartleyUseCase
-from titanic_m_learning.adapter.inbound.api.schemas.hartley_query_schema import HartleyIntroduceResponse, HartleyIntroduceSchema
+from titanic_m_learning.adapter.inbound.api.schemas.hartley_query_schema import HartleyIntroduceResponse
+from titanic_m_learning.app.dtos.hartley_dto import HartleyIntroduceQuery
 
 hartley_query_router = APIRouter(prefix="/titanic/hartley", tags=["/titanic/hartley"])
 
@@ -26,10 +27,6 @@ async def get_random_sample(
 async def introduce_myself(
     use_case: HartleyUseCase = Depends(get_hartley_use_case),
 ) -> HartleyIntroduceResponse:
-    return await use_case.introduce_myself(
-        HartleyIntroduceSchema(
-            id=7,
-            name='Wallace Hartley',
-        )
-    )
+    result = await use_case.introduce_myself(HartleyIntroduceQuery(id=7, name='Wallace Hartley'))
+    return HartleyIntroduceResponse(id=result.id, name=result.name, message=result.message)
 

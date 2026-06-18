@@ -8,6 +8,13 @@ from titanic_m_learning.app.ports.output.jack_repository import JackRepository
 from titanic_m_learning.app.use_cases.jack_query_interactor import JackQueryInteractor
 
 
-def get_jack_use_case(db: AsyncSession = Depends(get_db)) -> JackUseCase:
-    repository: JackRepository = JackQueryPgRepository(db=db)
+def get_jack_repository(
+        db: AsyncSession = Depends(get_db)
+) -> JackRepository:
+    return JackQueryPgRepository(session=db)
+
+
+def get_jack_use_case(
+    repository: JackRepository = Depends(get_jack_repository)
+) -> JackUseCase:
     return JackQueryInteractor(repository=repository)

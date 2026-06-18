@@ -1,6 +1,6 @@
-from titanic_m_learning.adapter.inbound.api.schemas.molly_query_schema import MollyReadNotableSurvivorResponse
+﻿from titanic_m_learning.adapter.inbound.api.schemas.molly_query_schema import MollyReadNotableSurvivorResponse
 from titanic_m_learning.app.dtos.molly_dto import MollyNotableQueryResult, MollyNotableSurvivorQuery
-from titanic_m_learning.domain.value_objects.titanic_vo import Gender
+from titanic_m_learning.domain.value_objects.gender_vo import Gender
 
 
 def query_to_response(query: MollyNotableSurvivorQuery) -> MollyReadNotableSurvivorResponse:

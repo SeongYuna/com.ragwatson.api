@@ -8,6 +8,13 @@ from titanic_m_learning.app.ports.output.molly_repository import MollyRepository
 from titanic_m_learning.app.use_cases.molly_query_interactor import MollyQueryInteractor
 
 
-def get_molly_use_case(db: AsyncSession = Depends(get_db)) -> MollyUseCase:
-    repository: MollyRepository = MollyQueryPgRepository(db=db)
+def get_molly_repository(
+        db: AsyncSession = Depends(get_db)
+) -> MollyRepository:
+    return MollyQueryPgRepository(session=db)
+
+
+def get_molly_use_case(
+    repository: MollyRepository = Depends(get_molly_repository)
+) -> MollyUseCase:
     return MollyQueryInteractor(repository=repository)

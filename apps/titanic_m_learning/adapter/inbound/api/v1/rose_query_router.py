@@ -4,7 +4,8 @@ from titanic_m_learning.adapter.inbound.api.dependencies import get_rose_use_cas
 from titanic_m_learning.adapter.inbound.api.mappers.rose_query_mapper import dataset_info_to_response
 from titanic_m_learning.adapter.inbound.api.schemas.rose_query_schema import RoseReadDatasetInfoResponse
 from titanic_m_learning.app.ports.input.rose_use_case import RoseUseCase
-from titanic_m_learning.adapter.inbound.api.schemas.rose_query_schema import RoseIntroduceResponse, RoseIntroduceSchema
+from titanic_m_learning.adapter.inbound.api.schemas.rose_query_schema import RoseIntroduceResponse
+from titanic_m_learning.app.dtos.rose_dto import RoseIntroduceQuery
 
 rose_query_router = APIRouter(prefix="/titanic/rose", tags=["/titanic/rose"])
 
@@ -25,10 +26,6 @@ async def get_dataset_info(
 async def introduce_myself(
     use_case: RoseUseCase = Depends(get_rose_use_case),
 ) -> RoseIntroduceResponse:
-    return await use_case.introduce_myself(
-        RoseIntroduceSchema(
-            id=12,
-            name='Rose DeWitt Bukater',
-        )
-    )
+    result = await use_case.introduce_myself(RoseIntroduceQuery(id=12, name='Rose DeWitt Bukater'))
+    return RoseIntroduceResponse(id=result.id, name=result.name, message=result.message)
 

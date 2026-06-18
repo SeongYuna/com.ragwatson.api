@@ -8,6 +8,13 @@ from titanic_m_learning.app.ports.output.ruth_repository import RuthRepository
 from titanic_m_learning.app.use_cases.ruth_query_interactor import RuthQueryInteractor
 
 
-def get_ruth_use_case(db: AsyncSession = Depends(get_db)) -> RuthUseCase:
-    repository: RuthRepository = RuthQueryPgRepository(db=db)
+def get_ruth_repository(
+        db: AsyncSession = Depends(get_db)
+) -> RuthRepository:
+    return RuthQueryPgRepository(session=db)
+
+
+def get_ruth_use_case(
+    repository: RuthRepository = Depends(get_ruth_repository)
+) -> RuthUseCase:
     return RuthQueryInteractor(repository=repository)

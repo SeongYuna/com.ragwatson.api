@@ -1,4 +1,30 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Any
+
+import numpy as np
+
+
+@dataclass(frozen=True)
+class JackTrainRow:
+    """ML 훈련에 필요한 원시 행 데이터."""
+    survived: str
+    pclass: str
+    sex: str
+    age: str
+    sib_sp: str
+    parch: str
+    fare: str
+    embarked: str
+
+
+@dataclass
+class JackTrainBundle:
+    """Jack이 훈련한 결과물. Caledon에게 전달된다."""
+    trained_models: dict[str, Any]        # algorithm_name → fitted sklearn model
+    X_test: np.ndarray                    # 표준화된 테스트 피처 (SVM·KNN·LR용)
+    X_test_raw: np.ndarray                # 원본 스케일 테스트 피처 (트리 계열용)
+    X_test_pca: np.ndarray                # PCA 변환 테스트 피처 (KMeans+PCA용)
+    y_test: np.ndarray                    # 테스트 레이블
 
 
 @dataclass(frozen=True)

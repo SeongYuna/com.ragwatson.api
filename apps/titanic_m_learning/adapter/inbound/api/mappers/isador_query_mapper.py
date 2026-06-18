@@ -1,6 +1,6 @@
-from titanic_m_learning.adapter.inbound.api.schemas.isador_query_schema import IsadorReadPassengerResponse
+﻿from titanic_m_learning.adapter.inbound.api.schemas.isador_query_schema import IsadorReadPassengerResponse
 from titanic_m_learning.app.dtos.isador_dto import IsadorPassengerQuery
-from titanic_m_learning.domain.value_objects.titanic_vo import Gender
+from titanic_m_learning.domain.value_objects.gender_vo import Gender
 
 
 def query_to_response(query: IsadorPassengerQuery) -> IsadorReadPassengerResponse:

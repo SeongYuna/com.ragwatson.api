@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from titanic_m_learning.adapter.inbound.api.v1.andrew_query_router import andrew_query_router
-from titanic_m_learning.adapter.inbound.api.v1.cal_query_router import cal_query_router
+from titanic_m_learning.adapter.inbound.api.v1.caledon_query_router import cal_query_router
 from titanic_m_learning.adapter.inbound.api.v1.hartley_query_router import hartley_query_router
 from titanic_m_learning.adapter.inbound.api.v1.isador_query_router import isador_query_router
 from titanic_m_learning.adapter.inbound.api.v1.jack_query_router import jack_query_router

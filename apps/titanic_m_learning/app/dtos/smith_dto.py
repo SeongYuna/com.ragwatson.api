@@ -19,3 +19,20 @@ class SmithIntroduceResult:
     id: int
     name: str
     message: str
+
+
+@dataclass(frozen=True)
+class SmithChatMessageDto:
+    role: str
+    content: str
+
+
+@dataclass(frozen=True)
+class SmithChatQuery:
+    messages: tuple[SmithChatMessageDto, ...]
+    model: str | None
+
+
+@dataclass(frozen=True)
+class SmithChatResult:
+    reply: str

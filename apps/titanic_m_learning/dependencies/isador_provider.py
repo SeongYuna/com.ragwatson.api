@@ -8,6 +8,13 @@ from titanic_m_learning.app.ports.output.isador_repository import IsadorReposito
 from titanic_m_learning.app.use_cases.isador_query_interactor import IsadorQueryInteractor
 
 
-def get_isador_use_case(db: AsyncSession = Depends(get_db)) -> IsadorUseCase:
-    repository: IsadorRepository = IsadorQueryPgRepository(db=db)
+def get_isador_repository(
+        db: AsyncSession = Depends(get_db)
+) -> IsadorRepository:
+    return IsadorQueryPgRepository(session=db)
+
+
+def get_isador_use_case(
+    repository: IsadorRepository = Depends(get_isador_repository)
+) -> IsadorUseCase:
     return IsadorQueryInteractor(repository=repository)

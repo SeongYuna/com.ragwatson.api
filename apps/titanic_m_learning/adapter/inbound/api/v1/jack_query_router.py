@@ -4,7 +4,8 @@ from titanic_m_learning.adapter.inbound.api.dependencies import get_jack_use_cas
 from titanic_m_learning.adapter.inbound.api.mappers.jack_query_mapper import query_to_response
 from titanic_m_learning.adapter.inbound.api.schemas.jack_query_schema import JackReadPassengerResponse
 from titanic_m_learning.app.ports.input.jack_use_case import JackUseCase
-from titanic_m_learning.adapter.inbound.api.schemas.jack_query_schema import JackIntroduceResponse, JackIntroduceSchema
+from titanic_m_learning.adapter.inbound.api.schemas.jack_query_schema import JackIntroduceResponse
+from titanic_m_learning.app.dtos.jack_dto import JackIntroduceQuery
 
 jack_query_router = APIRouter(prefix="/titanic/jack", tags=["/titanic/jack"])
 
@@ -28,10 +29,6 @@ async def get_passenger_by_id(
 async def introduce_myself(
     use_case: JackUseCase = Depends(get_jack_use_case),
 ) -> JackIntroduceResponse:
-    return await use_case.introduce_myself(
-        JackIntroduceSchema(
-            id=3,
-            name='Jack Dawson',
-        )
-    )
+    result = await use_case.introduce_myself(JackIntroduceQuery(id=3, name='Jack Dawson'))
+    return JackIntroduceResponse(id=result.id, name=result.name, message=result.message)
 

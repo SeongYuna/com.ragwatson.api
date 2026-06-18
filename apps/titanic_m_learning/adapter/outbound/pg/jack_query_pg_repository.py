@@ -4,9 +4,8 @@ from sqlalchemy.orm import selectinload
 
 from titanic_m_learning.adapter.outbound.mappers.jack_orm_mapper import person_booking_to_jack_query
 from titanic_m_learning.adapter.outbound.orm.person_orm import PersonORM
-from titanic_m_learning.app.dtos.jack_dto import JackPassengerQuery
+from titanic_m_learning.app.dtos.jack_dto import JackIntroduceQuery, JackIntroduceResult, JackPassengerQuery, JackTrainRow
 from titanic_m_learning.app.ports.output.jack_repository import JackRepository
-from titanic_m_learning.app.dtos.jack_dto import JackIntroduceQuery, JackIntroduceResult
 
 
 class JackQueryPgRepository(JackRepository):
@@ -30,4 +29,26 @@ class JackQueryPgRepository(JackRepository):
             name=query.name,
             message='3등석 승객 Jack Dawson입니다.',
         )
+
+    async def fetch_all_for_training(self) -> list[JackTrainRow]:
+        stmt = (
+            select(PersonORM)
+            .options(selectinload(PersonORM.booking))
+        )
+        result = await self._db.execute(stmt)
+        persons = result.scalars().all()
+        return [
+            JackTrainRow(
+                survived=p.survived,
+                pclass=p.booking.pclass if p.booking else "",
+                sex=p.gender,
+                age=p.age,
+                sib_sp=p.sib_sp,
+                parch=p.parch,
+                fare=p.booking.fare if p.booking else "",
+                embarked=p.booking.embarked if p.booking else "",
+            )
+            for p in persons
+            if p.booking is not None
+        ]
 

@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
 
-from titanic_m_learning.app.dtos.andrew_dto import AndrewPageQueryResult
-from titanic_m_learning.adapter.inbound.api.schemas.andrew_query_schema import AndrewIntroduceResponse, AndrewIntroduceSchema
+from titanic_m_learning.app.dtos.andrew_dto import (
+    AndrewPageQueryResult,
+    AndrewIntroduceQuery,
+    AndrewIntroduceResult,
+)
 
 
 class AndrewUseCase(ABC):
@@ -16,7 +19,6 @@ class AndrewUseCase(ABC):
         ...
 
     @abstractmethod
-    async def introduce_myself(self, schema: AndrewIntroduceSchema) -> AndrewIntroduceResponse:
+    async def introduce_myself(self, query: AndrewIntroduceQuery) -> AndrewIntroduceResult:
         """Andrew 자기소개."""
         ...
-

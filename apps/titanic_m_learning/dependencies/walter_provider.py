@@ -10,14 +10,20 @@ DIP 원칙:
 from core.database import get_db
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from titanic_m_learning.adapter.outbound.pg.walter_pg_repository import WalterPgRepository
 from titanic_m_learning.app.ports.input.walter_use_case import WalterUseCase
 from titanic_m_learning.app.ports.output.walter_repository import WalterRepository
 from titanic_m_learning.app.use_cases.walter_query_interactor import WalterQueryInteractor
 
 
+def get_walter_repository(
+        db: AsyncSession = Depends(get_db)
+) -> WalterRepository:
+    return WalterPgRepository(session=db)
+
+
 def get_walter_use_case(
-    db: AsyncSession = Depends(get_db),
+    repository: WalterRepository = Depends(get_walter_repository)
 ) -> WalterUseCase:
-    repository: WalterRepository = WalterPgRepository(db=db)
     return WalterQueryInteractor(repository=repository)

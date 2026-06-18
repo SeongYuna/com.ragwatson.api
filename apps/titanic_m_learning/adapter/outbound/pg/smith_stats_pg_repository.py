@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from titanic_m_learning.adapter.outbound.orm.person_orm import PersonORM
 from titanic_m_learning.app.dtos.smith_dto import SmithStatsResult
 from titanic_m_learning.app.ports.output.smith_repository import SmithRepository
-from titanic_m_learning.app.dtos.smith_dto import SmithIntroduceQuery, SmithIntroduceResult
+from titanic_m_learning.app.dtos.smith_dto import SmithIntroduceQuery, SmithIntroduceResult, SmithChatQuery, SmithChatResult
 
 
 class SmithStatsPgRepository(SmithRepository):
@@ -34,4 +34,7 @@ class SmithStatsPgRepository(SmithRepository):
             name=query.name,
             message='타이타닉 선장 Edward Smith입니다. 백만장자들의 선장이라 불렸으며, 고조되는 위기 속 배와 운명을 함께했습니다.',
         )
+
+    async def generate_reply(self, query: SmithChatQuery) -> SmithChatResult:
+        raise NotImplementedError("Gemini 어댑터가 필요합니다.")
 

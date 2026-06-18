@@ -8,6 +8,13 @@ from titanic_m_learning.app.ports.output.lowe_repository import LoweRepository
 from titanic_m_learning.app.use_cases.lowe_query_interactor import LoweQueryInteractor
 
 
-def get_lowe_use_case(db: AsyncSession = Depends(get_db)) -> LoweUseCase:
-    repository: LoweRepository = LoweQueryPgRepository(db=db)
+def get_lowe_repository(
+        db: AsyncSession = Depends(get_db)
+) -> LoweRepository:
+    return LoweQueryPgRepository(session=db)
+
+
+def get_lowe_use_case(
+    repository: LoweRepository = Depends(get_lowe_repository)
+) -> LoweUseCase:
     return LoweQueryInteractor(repository=repository)

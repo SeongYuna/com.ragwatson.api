@@ -1,17 +1,21 @@
-from abc import ABC, abstractmethod
+﻿from abc import ABC, abstractmethod
 
-from titanic_m_learning.app.dtos.walter_dto import WalterTableQueryResult
-from titanic_m_learning.adapter.inbound.api.schemas.walter_query_schema import WalterIntroduceResponse, WalterIntroduceSchema
+from titanic_m_learning.app.dtos.walter_dto import WalterTableQueryResult, WalterPassengerQuery, WalterIntroduceQuery, WalterIntroduceResult
 
 
 class WalterUseCase(ABC):
     @abstractmethod
     async def find_all(self) -> WalterTableQueryResult:
-        """전체 탑승객 목록을 조회한다."""
         ...
 
     @abstractmethod
-    async def introduce_myself(self, schema: WalterIntroduceSchema) -> WalterIntroduceResponse:
-        """Walter 자기소개."""
+    async def introduce_myself(self, query: WalterIntroduceQuery) -> WalterIntroduceResult:
         ...
 
+    @abstractmethod
+    async def get_train_set(self) -> list[WalterPassengerQuery]:
+        ...
+
+    @abstractmethod
+    async def get_test_set(self) -> list[WalterPassengerQuery]:
+        ...

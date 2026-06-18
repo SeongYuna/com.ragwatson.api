@@ -4,7 +4,8 @@ from titanic_m_learning.adapter.inbound.api.dependencies import get_caledon_use_
 from titanic_m_learning.adapter.inbound.api.mappers.cal_query_mapper import stats_to_response
 from titanic_m_learning.adapter.inbound.api.schemas.cal_query_schema import CaledonReadStatsResponse
 from titanic_m_learning.app.ports.input.caledon_use_case import CaledonUseCase
-from titanic_m_learning.adapter.inbound.api.schemas.cal_query_schema import CaledonIntroduceResponse, CaledonIntroduceSchema
+from titanic_m_learning.adapter.inbound.api.schemas.cal_query_schema import CaledonIntroduceResponse
+from titanic_m_learning.app.dtos.caledon_dto import CaledonIntroduceQuery
 
 cal_query_router = APIRouter(prefix="/titanic/cal", tags=["/titanic/cal"])
 
@@ -25,10 +26,6 @@ async def calculate_survival_stats(
 async def introduce_myself(
     use_case: CaledonUseCase = Depends(get_caledon_use_case),
 ) -> CaledonIntroduceResponse:
-    return await use_case.introduce_myself(
-        CaledonIntroduceSchema(
-            id=11,
-            name='Caledon Hockley',
-        )
-    )
+    result = await use_case.introduce_myself(CaledonIntroduceQuery(id=11, name='Caledon Hockley'))
+    return CaledonIntroduceResponse(id=result.id, name=result.name, message=result.message)
 

@@ -4,7 +4,8 @@ from titanic_m_learning.adapter.inbound.api.dependencies import get_lowe_use_cas
 from titanic_m_learning.adapter.inbound.api.mappers.lowe_query_mapper import result_to_responses
 from titanic_m_learning.adapter.inbound.api.schemas.lowe_query_schema import LoweReadLifeboatPassengerResponse
 from titanic_m_learning.app.ports.input.lowe_use_case import LoweUseCase
-from titanic_m_learning.adapter.inbound.api.schemas.lowe_query_schema import LoweIntroduceResponse, LoweIntroduceSchema
+from titanic_m_learning.adapter.inbound.api.schemas.lowe_query_schema import LoweIntroduceResponse
+from titanic_m_learning.app.dtos.lowe_dto import LoweIntroduceQuery
 
 lowe_query_router = APIRouter(prefix="/titanic/lowe", tags=["/titanic/lowe"])
 
@@ -26,10 +27,6 @@ async def get_lifeboat_passengers(
 async def introduce_myself(
     use_case: LoweUseCase = Depends(get_lowe_use_case),
 ) -> LoweIntroduceResponse:
-    return await use_case.introduce_myself(
-        LoweIntroduceSchema(
-            id=9,
-            name='Harold Lowe',
-        )
-    )
+    result = await use_case.introduce_myself(LoweIntroduceQuery(id=9, name='Harold Lowe'))
+    return LoweIntroduceResponse(id=result.id, name=result.name, message=result.message)
 

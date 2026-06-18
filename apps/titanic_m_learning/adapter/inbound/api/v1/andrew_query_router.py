@@ -4,7 +4,8 @@ from titanic_m_learning.adapter.inbound.api.dependencies import get_andrew_use_c
 from titanic_m_learning.adapter.inbound.api.mappers.andrew_query_mapper import queries_to_responses
 from titanic_m_learning.adapter.inbound.api.schemas.andrew_query_schema import AndrewReadPassengerResponse
 from titanic_m_learning.app.ports.input.andrew_use_case import AndrewUseCase
-from titanic_m_learning.adapter.inbound.api.schemas.andrew_query_schema import AndrewIntroduceResponse, AndrewIntroduceSchema
+from titanic_m_learning.adapter.inbound.api.schemas.andrew_query_schema import AndrewIntroduceResponse
+from titanic_m_learning.app.dtos.andrew_dto import AndrewIntroduceQuery
 
 andrew_query_router = APIRouter(prefix="/titanic/andrew", tags=["/titanic/andrew"])
 
@@ -27,10 +28,8 @@ async def get_titanic_table_page(
 async def introduce_myself(
     use_case: AndrewUseCase = Depends(get_andrew_use_case),
 ) -> AndrewIntroduceResponse:
-    return await use_case.introduce_myself(
-        AndrewIntroduceSchema(
-            id=2,
-            name='토마스 앤드류스 (Thomas Andrews)',
-        )
+    result = await use_case.introduce_myself(
+        AndrewIntroduceQuery(id=2, name='토마스 앤드류스 (Thomas Andrews)')
     )
+    return AndrewIntroduceResponse(id=result.id, name=result.name, message=result.message)
 

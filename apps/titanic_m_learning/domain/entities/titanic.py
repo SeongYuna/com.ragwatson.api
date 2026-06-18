@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from titanic_m_learning.domain.value_objects.titanic_vo import Gender
+from titanic_m_learning.domain.value_objects.gender_vo import Gender, GenderType
 
 
 @dataclass(frozen=True)
@@ -40,7 +40,7 @@ class TitanicPassenger:
             survived=survived,
             pclass=pclass,
             name=name,
-            gender=Gender.from_sex(sex),
+            gender=Gender.from_raw(sex),
             age=age,
             sib_sp=sib_sp,
             parch=parch,
@@ -67,12 +67,14 @@ class TitanicPassenger:
         cabin: str,
         embarked: str,
     ) -> "TitanicPassenger":
+        # 0 → FEMALE, 1 → MALE, 그 외 → UNKNOWN
+        gender_type = {0: GenderType.FEMALE, 1: GenderType.MALE}.get(gender, GenderType.UNKNOWN)
         return cls(
             passenger_id=passenger_id,
             survived=survived,
             pclass=pclass,
             name=name,
-            gender=Gender(gender),
+            gender=Gender(value=gender_type),
             age=age,
             sib_sp=sib_sp,
             parch=parch,

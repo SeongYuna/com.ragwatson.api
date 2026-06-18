@@ -1,6 +1,6 @@
-from titanic_m_learning.adapter.inbound.api.schemas.hartley_query_schema import HartleyReadPassengerResponse
+﻿from titanic_m_learning.adapter.inbound.api.schemas.hartley_query_schema import HartleyReadPassengerResponse
 from titanic_m_learning.app.dtos.hartley_dto import HartleyPassengerQuery
-from titanic_m_learning.domain.value_objects.titanic_vo import Gender
+from titanic_m_learning.domain.value_objects.gender_vo import Gender
 
 
 def query_to_response(query: HartleyPassengerQuery) -> HartleyReadPassengerResponse:

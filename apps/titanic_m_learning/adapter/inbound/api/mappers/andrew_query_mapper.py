@@ -1,6 +1,6 @@
-from titanic_m_learning.adapter.inbound.api.schemas.andrew_query_schema import AndrewReadPassengerResponse
+﻿from titanic_m_learning.adapter.inbound.api.schemas.andrew_query_schema import AndrewReadPassengerResponse
 from titanic_m_learning.app.dtos.andrew_dto import AndrewPassengerQuery
-from titanic_m_learning.domain.value_objects.titanic_vo import Gender
+from titanic_m_learning.domain.value_objects.gender_vo import Gender
 
 
 def query_to_response(query: AndrewPassengerQuery) -> AndrewReadPassengerResponse:

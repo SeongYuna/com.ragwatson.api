@@ -8,6 +8,13 @@ from titanic_m_learning.app.ports.output.andrew_repository import AndrewReposito
 from titanic_m_learning.app.use_cases.andrew_query_interactor import AndrewQueryInteractor
 
 
-def get_andrew_use_case(db: AsyncSession = Depends(get_db)) -> AndrewUseCase:
-    repository: AndrewRepository = AndrewQueryPgRepository(db=db)
+def get_andrew_repository(
+        db: AsyncSession = Depends(get_db)
+) -> AndrewRepository:
+    return AndrewQueryPgRepository(session=db)
+
+
+def get_andrew_use_case(
+    repository: AndrewRepository = Depends(get_andrew_repository)
+) -> AndrewUseCase:
     return AndrewQueryInteractor(repository=repository)

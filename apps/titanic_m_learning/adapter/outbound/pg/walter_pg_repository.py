@@ -33,3 +33,13 @@ class WalterPgRepository(WalterRepository):
             message='저는 Walter입니다. 타이타닉 승객 전체 기록을 조회합니다.',
         )
 
+    async def get_train_set(self) -> list[WalterPassengerQuery]:
+        all_passengers = await self.find_all()
+        split = int(len(all_passengers) * 0.8)
+        return all_passengers[:split]
+
+    async def get_test_set(self) -> list[WalterPassengerQuery]:
+        all_passengers = await self.find_all()
+        split = int(len(all_passengers) * 0.8)
+        return all_passengers[split:]
+

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from titanic_m_learning.app.dtos.caledon_dto import CaledonStatsResult
-from titanic_m_learning.adapter.inbound.api.schemas.cal_query_schema import CaledonIntroduceResponse, CaledonIntroduceSchema
+from titanic_m_learning.app.dtos.caledon_dto import CaledonModelTestResult, CaledonStatsResult, CaledonIntroduceQuery, CaledonIntroduceResult
+from titanic_m_learning.app.dtos.jack_dto import JackTrainBundle
 
 
 class CaledonUseCase(ABC):
@@ -11,7 +11,11 @@ class CaledonUseCase(ABC):
         ...
 
     @abstractmethod
-    async def introduce_myself(self, schema: CaledonIntroduceSchema) -> CaledonIntroduceResponse:
+    async def introduce_myself(self, query: CaledonIntroduceQuery) -> CaledonIntroduceResult:
         """Caledon 자기소개."""
         ...
 
+    @abstractmethod
+    async def test_model(self, bundle: JackTrainBundle) -> CaledonModelTestResult:
+        """잭이 훈련한 모델들을 테스트 셋으로 평가하고 점수화해서 1등을 반환한다."""
+        ...

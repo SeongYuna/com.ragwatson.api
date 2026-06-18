@@ -10,7 +10,13 @@ from titanic_m_learning.adapter.inbound.api.schemas.james_cmd_schema import (
     JamesWriteUploadResponse,
 )
 from titanic_m_learning.app.ports.input.james_cmd_use_case import JamesCmdUseCase
-from titanic_m_learning.adapter.inbound.api.schemas.james_cmd_schema import JamesIntroduceResponse, JamesIntroduceSchema
+from titanic_m_learning.adapter.inbound.api.schemas.james_cmd_schema import JamesIntroduceResponse
+from titanic_m_learning.app.dtos.james_cmd_dto import (
+    JamesIntroduceQuery,
+    JamesPassengerCommand,
+    PersonCommand,
+    BookingCommand,
+)
 
 james_cmd_router = APIRouter(prefix="/titanic/james", tags=["/titanic/james"])
 
@@ -30,18 +36,36 @@ async def upload_titanic_csv(
         text = raw.decode("cp949", errors="replace")
 
     reader = csv.DictReader(io.StringIO(text))
-    requests: list[JamesWritePassengerRequest] = []
+    commands: list[JamesPassengerCommand] = []
 
     for line_num, row in enumerate(reader, start=2):
         try:
-            requests.append(JamesWritePassengerRequest.model_validate(row))
+            req = JamesWritePassengerRequest.model_validate(row)
+            commands.append(JamesPassengerCommand(
+                person=PersonCommand(
+                    passenger_id=req.passenger_id,
+                    name=req.name,
+                    gender=req.gender,
+                    age=req.age,
+                    sib_sp=req.sib_sp,
+                    parch=req.parch,
+                    survived=req.survived,
+                ),
+                booking=BookingCommand(
+                    pclass=req.pclass,
+                    ticket=req.ticket,
+                    fare=req.fare,
+                    cabin=req.cabin,
+                    embarked=req.embarked,
+                ),
+            ))
         except Exception as exc:
             raise HTTPException(
                 status_code=422, detail=f"{line_num}행 파싱 오류: {exc}"
             ) from exc
 
     try:
-        result = await use_case.execute(requests)
+        result = await use_case.execute(commands)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"서버 오류: {exc}") from exc
 
@@ -51,10 +75,6 @@ async def upload_titanic_csv(
 async def introduce_myself(
     use_case: JamesCmdUseCase = Depends(get_james_cmd_use_case),
 ) -> JamesIntroduceResponse:
-    return await use_case.introduce_myself(
-        JamesIntroduceSchema(
-            id=4,
-            name='James',
-        )
-    )
+    result = await use_case.introduce_myself(JamesIntroduceQuery(id=4, name='James'))
+    return JamesIntroduceResponse(id=result.id, name=result.name, message=result.message)
 

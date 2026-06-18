@@ -1,6 +1,6 @@
-from titanic_m_learning.adapter.inbound.api.schemas.ruth_query_schema import RuthReadPassengerResponse
+﻿from titanic_m_learning.adapter.inbound.api.schemas.ruth_query_schema import RuthReadPassengerResponse
 from titanic_m_learning.app.dtos.ruth_dto import RuthPassengerQuery
-from titanic_m_learning.domain.value_objects.titanic_vo import Gender
+from titanic_m_learning.domain.value_objects.gender_vo import Gender
 
 
 def query_to_response(query: RuthPassengerQuery) -> RuthReadPassengerResponse:
