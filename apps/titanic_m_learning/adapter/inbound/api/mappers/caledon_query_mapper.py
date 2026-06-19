@@ -1,4 +1,4 @@
-from titanic_m_learning.adapter.inbound.api.schemas.cal_query_schema import CaledonReadStatsResponse
+from titanic_m_learning.adapter.inbound.api.schemas.caledon_query_schema import CaledonReadStatsResponse
 from titanic_m_learning.app.dtos.caledon_dto import CaledonStatsResult
 
 

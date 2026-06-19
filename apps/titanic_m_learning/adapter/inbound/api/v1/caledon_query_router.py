@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from titanic_m_learning.adapter.inbound.api.dependencies import get_caledon_use_case
-from titanic_m_learning.adapter.inbound.api.mappers.cal_query_mapper import stats_to_response
-from titanic_m_learning.adapter.inbound.api.schemas.cal_query_schema import CaledonReadStatsResponse
+from titanic_m_learning.adapter.inbound.api.mappers.caledon_query_mapper import stats_to_response
+from titanic_m_learning.adapter.inbound.api.schemas.caledon_query_schema import CaledonReadStatsResponse, CaledonIntroduceResponse
 from titanic_m_learning.app.ports.input.caledon_use_case import CaledonUseCase
-from titanic_m_learning.adapter.inbound.api.schemas.cal_query_schema import CaledonIntroduceResponse
 from titanic_m_learning.app.dtos.caledon_dto import CaledonIntroduceQuery
 
 cal_query_router = APIRouter(prefix="/titanic/cal", tags=["/titanic/cal"])

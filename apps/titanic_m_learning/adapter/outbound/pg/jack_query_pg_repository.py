@@ -39,16 +39,19 @@ class JackQueryPgRepository(JackRepository):
         persons = result.scalars().all()
         return [
             JackTrainRow(
+                passenger_id=p.passenger_id,
+                name=p.name,
+                gender=p.gender,
                 survived=p.survived,
-                pclass=p.booking.pclass if p.booking else "",
-                sex=p.gender,
+                pclass=p.booking.pclass,
                 age=p.age,
                 sib_sp=p.sib_sp,
                 parch=p.parch,
-                fare=p.booking.fare if p.booking else "",
-                embarked=p.booking.embarked if p.booking else "",
+                ticket=p.booking.ticket,
+                fare=p.booking.fare,
+                cabin=p.booking.cabin,
+                embarked=p.booking.embarked,
             )
             for p in persons
             if p.booking is not None
         ]
-

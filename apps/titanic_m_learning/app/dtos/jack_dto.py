@@ -6,14 +6,18 @@ import numpy as np
 
 @dataclass(frozen=True)
 class JackTrainRow:
-    """ML 훈련에 필요한 원시 행 데이터."""
+    """ML 훈련에 필요한 원시 행 데이터. 컬럼명은 Lowe.feature_engineering 입력 스키마와 일치한다."""
+    passenger_id: str
+    name: str
+    gender: str
     survived: str
     pclass: str
-    sex: str
     age: str
     sib_sp: str
     parch: str
+    ticket: str
     fare: str
+    cabin: str
     embarked: str
 
 

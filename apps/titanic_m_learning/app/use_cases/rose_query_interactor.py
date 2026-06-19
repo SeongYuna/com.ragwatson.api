@@ -1,15 +1,21 @@
+from typing import Any
+
+from sklearn.ensemble import GradientBoostingClassifier, HistGradientBoostingClassifier, RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+
 from titanic_m_learning.app.dtos.rose_dto import (
     RoseDatasetInfoResult,
     RoseIntroduceQuery,
+    RoseIntroduceResult,
     RosePredictQuery,
     RosePredictResult,
 )
 from titanic_m_learning.app.ports.input.rose_use_case import MLAlgorithmStrategy, RoseUseCase
 from titanic_m_learning.app.ports.output.rose_repository import RoseRepository
-from titanic_m_learning.adapter.inbound.api.schemas.rose_query_schema import (
-    RoseIntroduceResponse,
-    RoseIntroduceSchema,
-)
 
 
 # ──────────────────────────────────────────────
@@ -22,6 +28,9 @@ class XGBoostStrategy(MLAlgorithmStrategy):
     @property
     def name(self) -> str:
         return "XGBoost"
+
+    def build_estimator(self) -> tuple[str, Any]:
+        return "raw", GradientBoostingClassifier(n_estimators=200, learning_rate=0.05, max_depth=4, random_state=42)
 
     async def predict(self, query: RosePredictQuery) -> RosePredictResult:
         score = 0.0
@@ -40,6 +49,9 @@ class RandomForestStrategy(MLAlgorithmStrategy):
     @property
     def name(self) -> str:
         return "RandomForest"
+
+    def build_estimator(self) -> tuple[str, Any]:
+        return "raw", RandomForestClassifier(n_estimators=200, max_depth=6, random_state=42)
 
     async def predict(self, query: RosePredictQuery) -> RosePredictResult:
         votes = [
@@ -60,6 +72,9 @@ class LightGBMStrategy(MLAlgorithmStrategy):
     def name(self) -> str:
         return "LightGBM"
 
+    def build_estimator(self) -> tuple[str, Any]:
+        return "raw", HistGradientBoostingClassifier(max_iter=200, learning_rate=0.05, max_depth=4, random_state=42)
+
     async def predict(self, query: RosePredictQuery) -> RosePredictResult:
         score = 0.0
         score += 0.45 if query.sex == "female" else 0.0
@@ -78,6 +93,9 @@ class CatBoostStrategy(MLAlgorithmStrategy):
     def name(self) -> str:
         return "CatBoost"
 
+    def build_estimator(self) -> tuple[str, Any]:
+        return "raw", HistGradientBoostingClassifier(max_iter=200, random_state=42)
+
     async def predict(self, query: RosePredictQuery) -> RosePredictResult:
         # 범주형(sex, pclass) 피처 중심 점수 계산
         sex_score = 0.5 if query.sex == "female" else 0.1
@@ -94,6 +112,9 @@ class LogisticRegressionStrategy(MLAlgorithmStrategy):
     def name(self) -> str:
         return "LogisticRegression"
 
+    def build_estimator(self) -> tuple[str, Any]:
+        return "std", LogisticRegression(max_iter=1000, random_state=42)
+
     async def predict(self, query: RosePredictQuery) -> RosePredictResult:
         import math
         # 로지스틱 회귀 근사: logit = w0 + w1*sex + w2*pclass + w3*age
@@ -109,6 +130,9 @@ class DecisionTreeStrategy(MLAlgorithmStrategy):
     @property
     def name(self) -> str:
         return "DecisionTree"
+
+    def build_estimator(self) -> tuple[str, Any]:
+        return "raw", DecisionTreeClassifier(max_depth=5, random_state=42)
 
     async def predict(self, query: RosePredictQuery) -> RosePredictResult:
         # 규칙 트리: sex → pclass → age 순 분기
@@ -127,6 +151,9 @@ class SVMStrategy(MLAlgorithmStrategy):
     def name(self) -> str:
         return "SVM"
 
+    def build_estimator(self) -> tuple[str, Any]:
+        return "std", SVC(kernel="rbf", C=1.0, probability=True, random_state=42)
+
     async def predict(self, query: RosePredictQuery) -> RosePredictResult:
         # RBF 커널 근사: 표준화된 피처 기반 서포트 벡터 점수
         sex_val = 1.0 if query.sex == "female" else -1.0
@@ -144,6 +171,9 @@ class KNNStrategy(MLAlgorithmStrategy):
     def name(self) -> str:
         return "KNN"
 
+    def build_estimator(self) -> tuple[str, Any]:
+        return "std", KNeighborsClassifier(n_neighbors=5)
+
     async def predict(self, query: RosePredictQuery) -> RosePredictResult:
         # 대표 이웃 그룹과의 유사도 점수 (여성 1등석, 남성 3등석 등)
         female_1st = abs(query.pclass - 1) + (0 if query.sex == "female" else 3) + abs(query.age - 35) / 30
@@ -160,6 +190,9 @@ class NaiveBayesStrategy(MLAlgorithmStrategy):
     def name(self) -> str:
         return "NaiveBayes"
 
+    def build_estimator(self) -> tuple[str, Any]:
+        return "std", GaussianNB()
+
     async def predict(self, query: RosePredictQuery) -> RosePredictResult:
         # P(survived | features) ∝ P(sex|survived) * P(pclass|survived) * P(age_bin|survived)
         p_sex = 0.74 if query.sex == "female" else 0.19
@@ -175,6 +208,10 @@ class KMeansPCAStrategy(MLAlgorithmStrategy):
     @property
     def name(self) -> str:
         return "KMeans+PCA"
+
+    def build_estimator(self) -> tuple[str, Any]:
+        # PCA 변환은 Jack이 수행하고, Rose는 압축 피처용 분류기를 제안한다.
+        return "pca", LogisticRegression(max_iter=1000, random_state=42)
 
     async def predict(self, query: RosePredictQuery) -> RosePredictResult:
         # PCA 근사: 주요 주성분으로 압축 후 생존 군집 거리 계산
@@ -198,15 +235,15 @@ class RoseQueryInteractor(RoseUseCase):
     async def get_dataset_info(self) -> RoseDatasetInfoResult:
         return await self._repository.fetch_dataset_info()
 
-    async def introduce_myself(self, schema: RoseIntroduceSchema) -> RoseIntroduceResponse:
-        result = await self._repository.introduce_myself(
-            RoseIntroduceQuery(id=schema.id, name=schema.name)
-        )
-        return RoseIntroduceResponse(
-            id=result.id,
-            name=result.name,
-            message=result.message,
-        )
+    async def introduce_myself(self, query: RoseIntroduceQuery) -> RoseIntroduceResult:
+        return await self._repository.introduce_myself(query)
+
+    def propose_models(self) -> dict[str, tuple[str, Any]]:
+        """훈련할 10가지 알고리즘을 미훈련 estimator로 제안한다. Jack이 받아 fit한다."""
+        return {
+            strategy.name: strategy.build_estimator()
+            for strategy in _STRATEGY_MAP.values()
+        }
 
     async def predict(
         self, query: RosePredictQuery, strategy: MLAlgorithmStrategy

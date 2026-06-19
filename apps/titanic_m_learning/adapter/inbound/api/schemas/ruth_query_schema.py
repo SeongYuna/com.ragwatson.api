@@ -1,21 +1,6 @@
-"""Ruth READ — GET /titanic/ruth/first-class 전용 스키마."""
+"""Ruth 스키마 — 자기소개 전용."""
 
 from pydantic import BaseModel, Field
-
-
-class RuthReadPassengerResponse(BaseModel):
-    passenger_id: str
-    survived: str
-    pclass: str
-    name: str
-    gender: int
-    age: str
-    sib_sp: str
-    parch: str
-    ticket: str
-    fare: str
-    cabin: str
-    embarked: str
 
 
 class RuthIntroduceSchema(BaseModel):

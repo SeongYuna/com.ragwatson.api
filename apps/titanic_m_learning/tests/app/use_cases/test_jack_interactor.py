@@ -16,7 +16,11 @@ def mock_repository():
 
 @pytest.fixture
 def interactor(mock_repository):
-    return JackQueryInteractor(repository=mock_repository)
+    return JackQueryInteractor(
+        repository=mock_repository,
+        lowe=MagicMock(),
+        rose=MagicMock(),
+    )
 
 
 class TestIntroduceMyself:

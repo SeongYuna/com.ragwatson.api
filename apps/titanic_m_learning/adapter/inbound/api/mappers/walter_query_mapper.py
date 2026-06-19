@@ -11,7 +11,7 @@ def query_to_response(query: WalterPassengerQuery) -> WalterReadPassengerRespons
         survived=person.survived,
         pclass=booking.pclass,
         name=person.name,
-        gender=Gender.from_sex(person.gender).value,
+        gender=Gender.from_raw(person.gender).value,
         age=person.age,
         sib_sp=person.sib_sp,
         parch=person.parch,

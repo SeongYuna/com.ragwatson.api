@@ -1,17 +1,6 @@
-"""Molly READ — 주목 승객·생존자 프로필 조회 전용 스키마."""
+"""Molly 스키마 — 자기소개 전용."""
 
 from pydantic import BaseModel, Field
-
-
-class MollyReadNotableSurvivorResponse(BaseModel):
-    """주목 승객 1행 (Molly Brown 등 생존·연대 관련)."""
-
-    passenger_id: str
-    name: str
-    pclass: str
-    survived: str
-    gender: int
-    assistance_note: str
 
 
 class MollyIntroduceSchema(BaseModel):

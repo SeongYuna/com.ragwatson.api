@@ -9,7 +9,7 @@ def query_to_response(query: LoweLifeboatPassengerQuery) -> LoweReadLifeboatPass
         name=query.name,
         lifeboat=query.lifeboat,
         survived=query.survived,
-        gender=Gender.from_sex(query.gender).value,
+        gender=Gender.from_raw(query.gender).value,
         pclass=query.pclass,
     )
 

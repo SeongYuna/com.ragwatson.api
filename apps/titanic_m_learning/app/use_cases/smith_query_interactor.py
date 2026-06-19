@@ -1,7 +1,7 @@
-import re
 import logging
 from typing import Optional
 
+from titanic_m_learning.app.dtos.andrew_dto import AndrewIntent
 from titanic_m_learning.app.dtos.smith_dto import (
     SmithStatsResult,
     SmithIntroduceQuery,
@@ -12,6 +12,7 @@ from titanic_m_learning.app.dtos.smith_dto import (
 )
 from titanic_m_learning.app.dtos.rose_dto import RosePredictQuery, RosePredictResult
 from titanic_m_learning.app.ports.input.smith_use_case import SmithUseCase
+from titanic_m_learning.app.ports.input.andrew_use_case import AndrewUseCase
 from titanic_m_learning.app.ports.input.jack_use_case import JackUseCase
 from titanic_m_learning.app.ports.input.rose_use_case import RoseUseCase
 from titanic_m_learning.app.ports.input.walter_use_case import WalterUseCase
@@ -57,6 +58,7 @@ class SmithQueryInteractor(SmithUseCase):
     def __init__(
         self,
         repository: SmithRepository,
+        andrew: AndrewUseCase,
         jack: JackUseCase,
         rose: RoseUseCase,
         walter: WalterUseCase,
@@ -65,6 +67,7 @@ class SmithQueryInteractor(SmithUseCase):
         hartley: HartleyUseCase,
     ) -> None:
         self._repository = repository
+        self._andrew = andrew
         self._jack = jack
         self._rose = rose
         self._walter = walter
@@ -91,9 +94,10 @@ class SmithQueryInteractor(SmithUseCase):
         model_result = await self._caledon.test_model(bundle)
         await self._hartley.get_correlation_heatmap()   # 캐시 워밍
 
-        # 2. 생존 예측 질문이면 예측 수행
+        # 2. Andrew가 Kiwi 형태소 분석으로 의도 파악 → 생존 예측 질문이면 예측 수행
         prediction_block = ""
-        predict_query = _extract_passenger_features(last_question)
+        intent = await self._andrew.analyze_intent(last_question)
+        predict_query = _intent_to_predict_query(intent)
         if predict_query is not None:
             result: RosePredictResult = await self._rose.predict_by_algorithm(
                 predict_query, model_result.winner
@@ -135,41 +139,23 @@ class SmithQueryInteractor(SmithUseCase):
 
 
 # ──────────────────────────────────────────────
-# 자연어 피처 추출 헬퍼
+# 의도 → 예측 질의 매핑 헬퍼
 # ──────────────────────────────────────────────
 
-_SURVIVAL_KEYWORDS = re.compile(
-    r"살[았수]|생존|살아남|survived?|would.*live|survive",
-    re.IGNORECASE,
-)
-_AGE_PATTERN   = re.compile(r"(\d{1,3})\s*(?:세|살|years?\s*old)", re.IGNORECASE)
-_SEX_MALE      = re.compile(r"남자|남성|남\b|male\b", re.IGNORECASE)
-_SEX_FEMALE    = re.compile(r"여자|여성|여\b|female\b", re.IGNORECASE)
-_CLASS_PATTERN = re.compile(r"([1-3])\s*(?:등석|등급|class)", re.IGNORECASE)
-_FARE_PATTERN  = re.compile(r"(?:요금|운임|fare)[^\d]*(\d+)", re.IGNORECASE)
-
-
-def _extract_passenger_features(text: str) -> Optional[RosePredictQuery]:
-    """질문에서 승객 피처를 추출한다. 생존 관련 질문이 아니거나 피처 부족이면 None."""
-    if not _SURVIVAL_KEYWORDS.search(text):
+def _intent_to_predict_query(intent: AndrewIntent) -> Optional[RosePredictQuery]:
+    """Andrew가 파악한 의도를 Rose 예측 질의로 매핑한다. 예측 근거가 없으면 None."""
+    if not (intent.is_survival_question and intent.has_passenger_features):
         return None
 
-    age_m  = _AGE_PATTERN.search(text)
-    sex_f  = _SEX_FEMALE.search(text)
-    sex_m  = _SEX_MALE.search(text)
-    cls_m  = _CLASS_PATTERN.search(text)
-    fare_m = _FARE_PATTERN.search(text)
-
-    # 성별·나이 중 하나도 없으면 예측할 근거 없음
-    if not age_m and not sex_m and not sex_f:
-        return None
-
-    age    = float(age_m.group(1)) if age_m else 30.0
-    sex    = "female" if sex_f else "male"
-    pclass = int(cls_m.group(1)) if cls_m else 3
-    fare   = float(fare_m.group(1)) if fare_m else _default_fare(pclass)
-
-    return RosePredictQuery(pclass=pclass, sex=sex, age=age, fare=fare, sibsp=0, parch=0)
+    pclass = intent.pclass or 3
+    return RosePredictQuery(
+        pclass=pclass,
+        sex=intent.sex or "male",
+        age=intent.age if intent.age is not None else 30.0,
+        fare=intent.fare if intent.fare is not None else _default_fare(pclass),
+        sibsp=intent.sibsp,
+        parch=intent.parch,
+    )
 
 
 def _default_fare(pclass: int) -> float:
