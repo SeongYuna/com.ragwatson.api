@@ -1,11 +1,11 @@
-from sqlalchemy import Select, func, select
+﻿from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from titanic_m_learning.adapter.outbound.mappers.hartley_orm_mapper import person_booking_to_hartley_query
 from titanic_m_learning.adapter.outbound.orm.person_orm import PersonORM
 from titanic_m_learning.app.dtos.hartley_dto import HartleyPassengerQuery
-from titanic_m_learning.app.ports.output.hartley_repository import HartleyRepository
+from titanic_m_learning.app.ports.output.hartley_port import HartleyPort
 from titanic_m_learning.app.dtos.hartley_dto import HartleyIntroduceQuery, HartleyIntroduceResult
 
 
@@ -23,7 +23,7 @@ async def _fetch_hartley_queries(db: AsyncSession, stmt: Select) -> list[Hartley
     ]
 
 
-class HartleyQueryPgRepository(HartleyRepository):
+class HartleyQueryRepository(HartleyPort):
     def __init__(self, db: AsyncSession) -> None:
         self._db = db
 

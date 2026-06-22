@@ -1,13 +1,13 @@
-from sqlalchemy import func, select
+﻿from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from titanic_m_learning.adapter.outbound.orm.person_orm import PersonORM
 from titanic_m_learning.app.dtos.caledon_dto import CaledonStatsResult
-from titanic_m_learning.app.ports.output.caledon_repository import CaledonRepository
+from titanic_m_learning.app.ports.output.caledon_port import CaledonPort
 from titanic_m_learning.app.dtos.caledon_dto import CaledonIntroduceQuery, CaledonIntroduceResult
 
 
-class CaledonStatsPgRepository(CaledonRepository):
+class CaledonStatsRepository(CaledonPort):
     def __init__(self, db: AsyncSession) -> None:
         self._db = db
 

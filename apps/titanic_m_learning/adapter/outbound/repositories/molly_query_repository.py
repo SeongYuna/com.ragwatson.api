@@ -1,10 +1,10 @@
-from sqlalchemy.ext.asyncio import AsyncSession
+﻿from sqlalchemy.ext.asyncio import AsyncSession
 
 from titanic_m_learning.app.dtos.molly_dto import MollyIntroduceQuery, MollyIntroduceResult
-from titanic_m_learning.app.ports.output.molly_repository import MollyRepository
+from titanic_m_learning.app.ports.output.molly_port import MollyPort
 
 
-class MollyQueryPgRepository(MollyRepository):
+class MollyQueryRepository(MollyPort):
     def __init__(self, db: AsyncSession) -> None:
         self._db = db
 

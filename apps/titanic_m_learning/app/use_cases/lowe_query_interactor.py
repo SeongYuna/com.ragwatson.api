@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import numpy as np
 import pandas as pd
@@ -9,11 +9,11 @@ from titanic_m_learning.app.dtos.lowe_dto import (
     LoweIntroduceResult,
 )
 from titanic_m_learning.app.ports.input.lowe_use_case import LoweUseCase
-from titanic_m_learning.app.ports.output.lowe_repository import LoweRepository
+from titanic_m_learning.app.ports.output.lowe_port import LowePort
 
 
 class LoweQueryInteractor(LoweUseCase):
-    def __init__(self, repository: LoweRepository) -> None:
+    def __init__(self, repository: LowePort) -> None:
         self._repository = repository
 
     async def find_lifeboats(self, *, lifeboat: str | None = None) -> LoweLifeboatQueryResult:

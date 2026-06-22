@@ -1,5 +1,5 @@
-from titanic_m_learning.app.dtos.rose_dto import RoseColumnInfo, RoseDatasetInfoResult
-from titanic_m_learning.app.ports.output.rose_repository import RoseRepository
+﻿from titanic_m_learning.app.dtos.rose_dto import RoseColumnInfo, RoseDatasetInfoResult
+from titanic_m_learning.app.ports.output.rose_port import RosePort
 from titanic_m_learning.app.dtos.rose_dto import RoseIntroduceQuery, RoseIntroduceResult
 
 _TITANIC_COLUMNS: tuple[RoseColumnInfo, ...] = (
@@ -18,7 +18,7 @@ _TITANIC_COLUMNS: tuple[RoseColumnInfo, ...] = (
 )
 
 
-class RoseQueryPgRepository(RoseRepository):
+class RoseQueryRepository(RosePort):
     async def fetch_dataset_info(self) -> RoseDatasetInfoResult:
         return RoseDatasetInfoResult(columns=_TITANIC_COLUMNS)
 

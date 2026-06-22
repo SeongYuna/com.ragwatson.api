@@ -1,4 +1,4 @@
-from sqlalchemy.dialects.postgresql import insert as pg_insert
+﻿from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from titanic_m_learning.adapter.outbound.orm.booking_orm import BookingORM
@@ -8,7 +8,7 @@ from titanic_m_learning.app.dtos.james_cmd_dto import (
     JamesIntroduceResult,
     JamesPassengerCommand,
 )
-from titanic_m_learning.app.ports.output.james_cmd_repository import JamesCmdRepository
+from titanic_m_learning.app.ports.output.james_cmd_port import JamesCmdPort
 
 _BATCH_SIZE = 500
 _PERSON_UPSERT_COLS = ("name", "gender", "age", "sib_sp", "parch", "survived")
@@ -58,7 +58,7 @@ def _upsert_batches(
     return statements
 
 
-class JamesCmdPgRepository(JamesCmdRepository):
+class JamesCmdRepository(JamesCmdPort):
     def __init__(self, db: AsyncSession) -> None:
         self._db = db
 

@@ -1,4 +1,4 @@
-import logging
+﻿import logging
 from typing import Optional
 
 from titanic_m_learning.app.dtos.andrew_dto import AndrewIntent
@@ -19,7 +19,7 @@ from titanic_m_learning.app.ports.input.walter_use_case import WalterUseCase
 from titanic_m_learning.app.ports.input.caledon_use_case import CaledonUseCase
 from titanic_m_learning.app.ports.input.lowe_use_case import LoweUseCase
 from titanic_m_learning.app.ports.input.hartley_use_case import HartleyUseCase
-from titanic_m_learning.app.ports.output.smith_repository import SmithRepository
+from titanic_m_learning.app.ports.output.smith_port import SmithPort
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +31,12 @@ _SYSTEM_PROMPT = """\
 당신은 타이타닉호의 선장 에드워드 스미스(Edward Smith)입니다.
 1912년 타이타닉 침몰 당시의 데이터를 ML로 분석한 결과를 바탕으로,
 승객 생존 가능성을 역사적 맥락과 함께 답변합니다.
+
+[답변 규칙 — 반드시 준수]
+- 아래 데이터에 수치가 있으면 반드시 그 수치를 그대로 인용하여 답변하십시오.
+- "생존 확률"이 제공된 경우 반드시 "%"로 명시하십시오.
+- "사용 모델"이 제공된 경우 반드시 알고리즘 이름을 언급하십시오.
+- 수치를 임의로 변경하거나 생략하지 마십시오.
 
 [생존율 영향 요인 — 상관관계 순위]
 1. 성별(Sex)     +0.53  여성이 남성보다 생존율 훨씬 높음 ("여성과 아이 먼저")
@@ -46,7 +52,7 @@ _SYSTEM_PROMPT = """\
 
 _PREDICTION_BLOCK = """\
 
-[이번 질문의 생존 예측 결과]
+[이번 질문의 생존 예측 결과 — 반드시 아래 수치를 그대로 인용할 것]
   - 조건    : {condition}
   - 예측    : {verdict}
   - 생존 확률: {probability:.1%}
@@ -57,7 +63,7 @@ _PREDICTION_BLOCK = """\
 class SmithQueryInteractor(SmithUseCase):
     def __init__(
         self,
-        repository: SmithRepository,
+        repository: SmithPort,
         andrew: AndrewUseCase,
         jack: JackUseCase,
         rose: RoseUseCase,

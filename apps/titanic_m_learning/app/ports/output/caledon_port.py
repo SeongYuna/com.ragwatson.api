@@ -1,10 +1,10 @@
-from abc import ABC, abstractmethod
+﻿from abc import ABC, abstractmethod
 
 from titanic_m_learning.app.dtos.caledon_dto import CaledonStatsResult
 from titanic_m_learning.app.dtos.caledon_dto import CaledonIntroduceQuery, CaledonIntroduceResult
 
 
-class CaledonRepository(ABC):
+class CaledonPort(ABC):
     @abstractmethod
     async def fetch_stats(self) -> CaledonStatsResult:
         ...

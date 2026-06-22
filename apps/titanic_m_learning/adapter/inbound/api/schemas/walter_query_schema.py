@@ -10,7 +10,7 @@ class WalterReadPassengerResponse(BaseModel):
     survived: str
     pclass: str
     name: str
-    gender: int
+    gender: str
     age: str
     sib_sp: str
     parch: str

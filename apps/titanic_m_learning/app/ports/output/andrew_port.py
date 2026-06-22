@@ -1,10 +1,10 @@
-from abc import ABC, abstractmethod
+﻿from abc import ABC, abstractmethod
 
 from titanic_m_learning.app.dtos.andrew_dto import AndrewPageQueryResult
 from titanic_m_learning.app.dtos.andrew_dto import AndrewIntroduceQuery, AndrewIntroduceResult
 
 
-class AndrewRepository(ABC):
+class AndrewPort(ABC):
     @abstractmethod
     async def find_page(self, *, skip: int, limit: int) -> AndrewPageQueryResult:
         ...

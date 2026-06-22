@@ -1,4 +1,4 @@
-import pandas as pd
+﻿import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -7,11 +7,11 @@ from titanic_m_learning.app.dtos.jack_dto import JackIntroduceQuery, JackIntrodu
 from titanic_m_learning.app.ports.input.jack_use_case import JackUseCase
 from titanic_m_learning.app.ports.input.lowe_use_case import LoweUseCase
 from titanic_m_learning.app.ports.input.rose_use_case import RoseUseCase
-from titanic_m_learning.app.ports.output.jack_repository import JackRepository
+from titanic_m_learning.app.ports.output.jack_port import JackPort
 
 
 class JackQueryInteractor(JackUseCase):
-    def __init__(self, repository: JackRepository, lowe: LoweUseCase, rose: RoseUseCase) -> None:
+    def __init__(self, repository: JackPort, lowe: LoweUseCase, rose: RoseUseCase) -> None:
         self._repository = repository
         self._lowe = lowe
         self._rose = rose
@@ -34,7 +34,7 @@ class JackQueryInteractor(JackUseCase):
         # 피처 엔지니어링은 Lowe가 담당. 잔여 컬럼을 수치화해 모델 입력으로 정리.
         feat_df = self._lowe.feature_engineering(train_df)
         feat_df = feat_df.apply(pd.to_numeric, errors="coerce").fillna(0)
-        y = feat_df["survived"].astype(int).values
+        y = feat_df["survived"].astype(int).to_numpy()
         X = feat_df.drop(columns=["survived"]).values.astype(float)
         X_std = StandardScaler().fit_transform(X)
 
@@ -64,9 +64,6 @@ class JackQueryInteractor(JackUseCase):
             X_test_pca=X_pca_test,
             y_test=y_test,
         )
-
-    async def analyze_message_incent(self, user_message: str) -> list:
-        return []
 
     async def find_by_id(self, passenger_id: str) -> JackPassengerQuery:
         return await self._repository.find_by_id(passenger_id)

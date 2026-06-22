@@ -1,4 +1,4 @@
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+﻿from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
 from titanic_m_learning.app.dtos.caledon_dto import (
     CaledonIntroduceQuery,
@@ -9,11 +9,11 @@ from titanic_m_learning.app.dtos.caledon_dto import (
 )
 from titanic_m_learning.app.dtos.jack_dto import JackTrainBundle
 from titanic_m_learning.app.ports.input.caledon_use_case import CaledonUseCase
-from titanic_m_learning.app.ports.output.caledon_repository import CaledonRepository
+from titanic_m_learning.app.ports.output.caledon_port import CaledonPort
 
 
 class CaledonQueryInteractor(CaledonUseCase):
-    def __init__(self, repository: CaledonRepository) -> None:
+    def __init__(self, repository: CaledonPort) -> None:
         self._repository = repository
 
     async def calculate_stats(self) -> CaledonStatsResult:

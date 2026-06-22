@@ -1,15 +1,15 @@
-from titanic_m_learning.app.dtos.james_cmd_dto import (
+﻿from titanic_m_learning.app.dtos.james_cmd_dto import (
     JamesPassengerCommand,
     JamesUploadResult,
     JamesIntroduceQuery,
     JamesIntroduceResult,
 )
 from titanic_m_learning.app.ports.input.james_cmd_use_case import JamesCmdUseCase
-from titanic_m_learning.app.ports.output.james_cmd_repository import JamesCmdRepository
+from titanic_m_learning.app.ports.output.james_cmd_port import JamesCmdPort
 
 
 class JamesCmdInteractor(JamesCmdUseCase):
-    def __init__(self, repository: JamesCmdRepository) -> None:
+    def __init__(self, repository: JamesCmdPort) -> None:
         self._repository = repository
 
     async def execute(self, commands: list[JamesPassengerCommand]) -> JamesUploadResult:

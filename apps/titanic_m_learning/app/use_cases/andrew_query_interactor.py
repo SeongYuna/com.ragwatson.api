@@ -1,15 +1,15 @@
-import re
+﻿import re
 
 from kiwipiepy import Kiwi
 
 from titanic_m_learning.app.dtos.andrew_dto import (
     AndrewIntent,
     AndrewIntroduceQuery,
+    AndrewIntroduceResult,
     AndrewPageQueryResult,
 )
 from titanic_m_learning.app.ports.input.andrew_use_case import AndrewUseCase
-from titanic_m_learning.app.ports.output.andrew_repository import AndrewRepository
-from titanic_m_learning.adapter.inbound.api.schemas.andrew_query_schema import AndrewIntroduceResponse, AndrewIntroduceSchema
+from titanic_m_learning.app.ports.output.andrew_port import AndrewPort
 
 # Kiwi 인스턴스는 로딩 비용이 크므로 모듈 단위 지연 싱글턴으로 재사용한다.
 _kiwi: Kiwi | None = None
@@ -52,7 +52,7 @@ def _to_int(s: str) -> int | None:
 
 
 class AndrewQueryInteractor(AndrewUseCase):
-    def __init__(self, repository: AndrewRepository) -> None:
+    def __init__(self, repository: AndrewPort) -> None:
         self._repository = repository
 
     async def find_page(
@@ -67,7 +67,7 @@ class AndrewQueryInteractor(AndrewUseCase):
         """Kiwi 형태소 분석으로 질문 의도와 승객 피처를 파악한다."""
         kiwi = _get_kiwi()
         cleaned = kiwi.space(question)
-        tokens = kiwi.tokenize(cleaned)
+        tokens: list = list(kiwi.tokenize(cleaned))  # type: ignore[arg-type]
         forms = [t.form for t in tokens]
         nouns = tuple(t.form for t in tokens if t.tag.startswith("NN"))
         lowered = question.lower()
@@ -129,12 +129,5 @@ class AndrewQueryInteractor(AndrewUseCase):
             nouns=nouns,
         )
 
-    async def introduce_myself(self, schema: AndrewIntroduceSchema) -> AndrewIntroduceResponse:
-        result = await self._repository.introduce_myself(
-            AndrewIntroduceQuery(id=schema.id, name=schema.name)
-        )
-        return AndrewIntroduceResponse(
-            id=result.id,
-            name=result.name,
-            message=result.message,
-        )
+    async def introduce_myself(self, query: AndrewIntroduceQuery) -> AndrewIntroduceResult:
+        return await self._repository.introduce_myself(query)

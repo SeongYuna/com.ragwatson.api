@@ -1,13 +1,20 @@
+﻿import asyncio
+import os
+
+import ollama
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from titanic_m_learning.adapter.outbound.orm.person_orm import PersonORM
 from titanic_m_learning.app.dtos.smith_dto import SmithStatsResult
-from titanic_m_learning.app.ports.output.smith_repository import SmithRepository
+from titanic_m_learning.app.ports.output.smith_port import SmithPort
 from titanic_m_learning.app.dtos.smith_dto import SmithIntroduceQuery, SmithIntroduceResult, SmithChatQuery, SmithChatResult
 
+_OLLAMA_MODEL = "anpigon/eeve-korean-10.8b:latest"
+_OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 
-class SmithStatsPgRepository(SmithRepository):
+
+class SmithStatsRepository(SmithPort):
     def __init__(self, db: AsyncSession) -> None:
         self._db = db
 
@@ -36,5 +43,13 @@ class SmithStatsPgRepository(SmithRepository):
         )
 
     async def generate_reply(self, query: SmithChatQuery) -> SmithChatResult:
-        raise NotImplementedError("Gemini 어댑터가 필요합니다.")
+        messages = [{"role": m.role, "content": m.content} for m in query.messages]
+        client = ollama.Client(host=_OLLAMA_HOST)
+        response = await asyncio.to_thread(
+            client.chat,
+            model=_OLLAMA_MODEL,
+            messages=messages,
+        )
+        reply = response.message.content
+        return SmithChatResult(reply=reply)
 

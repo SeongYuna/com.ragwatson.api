@@ -1,4 +1,4 @@
-from sqlalchemy import select
+﻿from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -6,11 +6,11 @@ from titanic_m_learning.adapter.outbound.mappers.lowe_orm_mapper import person_b
 from titanic_m_learning.adapter.outbound.orm.booking_orm import BookingORM
 from titanic_m_learning.adapter.outbound.orm.person_orm import PersonORM
 from titanic_m_learning.app.dtos.lowe_dto import LoweLifeboatQueryResult
-from titanic_m_learning.app.ports.output.lowe_repository import LoweRepository
+from titanic_m_learning.app.ports.output.lowe_port import LowePort
 from titanic_m_learning.app.dtos.lowe_dto import LoweIntroduceQuery, LoweIntroduceResult
 
 
-class LoweQueryPgRepository(LoweRepository):
+class LoweQueryRepository(LowePort):
     def __init__(self, db: AsyncSession) -> None:
         self._db = db
 

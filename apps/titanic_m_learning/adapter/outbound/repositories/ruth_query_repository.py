@@ -1,10 +1,10 @@
-from sqlalchemy.ext.asyncio import AsyncSession
+﻿from sqlalchemy.ext.asyncio import AsyncSession
 
 from titanic_m_learning.app.dtos.ruth_dto import RuthIntroduceQuery, RuthIntroduceResult
-from titanic_m_learning.app.ports.output.ruth_repository import RuthRepository
+from titanic_m_learning.app.ports.output.ruth_port import RuthPort
 
 
-class RuthQueryPgRepository(RuthRepository):
+class RuthQueryRepository(RuthPort):
     def __init__(self, db: AsyncSession) -> None:
         self._db = db
 

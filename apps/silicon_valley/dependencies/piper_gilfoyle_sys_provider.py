@@ -1,8 +1,8 @@
-from core.database import get_db
+﻿from core.database import get_db
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from silicon_valley.adapter.outbound.pg.piper_gilfoyle_sys_pg_repository import PiperGilfoyleSysPgRepository
+from silicon_valley.adapter.outbound.pg.piper_gilfoyle_sys_pg_repository import PiperGilfoyleSysRepository
 from silicon_valley.app.ports.input.piper_gilfoyle_sys_use_case import PiperGilfoyleSysUseCase
 from silicon_valley.app.ports.output.piper_gilfoyle_sys_repository import PiperGilfoyleSysRepository
 from silicon_valley.app.use_cases.piper_gilfoyle_sys_interactor import PiperGilfoyleSysInteractor

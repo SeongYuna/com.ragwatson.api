@@ -1,9 +1,9 @@
-from abc import ABC, abstractmethod
+﻿from abc import ABC, abstractmethod
 
 from titanic_m_learning.app.dtos.jack_dto import JackIntroduceQuery, JackIntroduceResult, JackPassengerQuery, JackTrainRow
 
 
-class JackRepository(ABC):
+class JackPort(ABC):
     @abstractmethod
     async def find_by_id(self, passenger_id: str) -> JackPassengerQuery:
         ...

@@ -1,10 +1,10 @@
-from abc import ABC, abstractmethod
+﻿from abc import ABC, abstractmethod
 
 from titanic_m_learning.app.dtos.lowe_dto import LoweLifeboatQueryResult
 from titanic_m_learning.app.dtos.lowe_dto import LoweIntroduceQuery, LoweIntroduceResult
 
 
-class LoweRepository(ABC):
+class LowePort(ABC):
     @abstractmethod
     async def find_lifeboats(self, *, lifeboat: str | None = None) -> LoweLifeboatQueryResult:
         ...

@@ -1,10 +1,10 @@
-from sqlalchemy.ext.asyncio import AsyncSession
+﻿from sqlalchemy.ext.asyncio import AsyncSession
 
 from titanic_m_learning.app.dtos.isador_dto import IsadorIntroduceQuery, IsadorIntroduceResult
-from titanic_m_learning.app.ports.output.isador_repository import IsadorRepository
+from titanic_m_learning.app.ports.output.isador_port import IsadorPort
 
 
-class IsadorQueryPgRepository(IsadorRepository):
+class IsadorQueryRepository(IsadorPort):
     def __init__(self, db: AsyncSession) -> None:
         self._db = db
 

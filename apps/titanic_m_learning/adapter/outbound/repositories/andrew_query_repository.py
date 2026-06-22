@@ -1,11 +1,11 @@
-from sqlalchemy import Select, func, select
+﻿from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from titanic_m_learning.adapter.outbound.mappers.andrew_orm_mapper import person_booking_to_andrew_query
 from titanic_m_learning.adapter.outbound.orm.person_orm import PersonORM
 from titanic_m_learning.app.dtos.andrew_dto import AndrewPageQueryResult, AndrewPassengerQuery
-from titanic_m_learning.app.ports.output.andrew_repository import AndrewRepository
+from titanic_m_learning.app.ports.output.andrew_port import AndrewPort
 from titanic_m_learning.app.dtos.andrew_dto import AndrewIntroduceQuery, AndrewIntroduceResult
 
 
@@ -32,7 +32,7 @@ async def _count_persons_with_booking(db: AsyncSession) -> int:
     return int(total or 0)
 
 
-class AndrewQueryPgRepository(AndrewRepository):
+class AndrewQueryRepository(AndrewPort):
     def __init__(self, db: AsyncSession) -> None:
         self._db = db
 

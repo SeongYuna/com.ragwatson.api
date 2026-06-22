@@ -1,4 +1,4 @@
-from typing import Any
+﻿from typing import Any
 
 from sklearn.ensemble import GradientBoostingClassifier, HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -15,7 +15,7 @@ from titanic_m_learning.app.dtos.rose_dto import (
     RosePredictResult,
 )
 from titanic_m_learning.app.ports.input.rose_use_case import MLAlgorithmStrategy, RoseUseCase
-from titanic_m_learning.app.ports.output.rose_repository import RoseRepository
+from titanic_m_learning.app.ports.output.rose_port import RosePort
 
 
 # ──────────────────────────────────────────────
@@ -229,7 +229,7 @@ class KMeansPCAStrategy(MLAlgorithmStrategy):
 # ──────────────────────────────────────────────
 
 class RoseQueryInteractor(RoseUseCase):
-    def __init__(self, repository: RoseRepository) -> None:
+    def __init__(self, repository: RosePort) -> None:
         self._repository = repository
 
     async def get_dataset_info(self) -> RoseDatasetInfoResult:

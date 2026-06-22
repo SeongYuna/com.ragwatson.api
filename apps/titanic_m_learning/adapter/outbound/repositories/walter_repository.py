@@ -1,15 +1,15 @@
-from sqlalchemy import select
+﻿from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from titanic_m_learning.adapter.outbound.mappers.walter_orm_mapper import person_booking_to_walter_query
 from titanic_m_learning.adapter.outbound.orm.person_orm import PersonORM
 from titanic_m_learning.app.dtos.walter_dto import WalterPassengerQuery
-from titanic_m_learning.app.ports.output.walter_repository import WalterRepository
+from titanic_m_learning.app.ports.output.walter_port import WalterPort
 from titanic_m_learning.app.dtos.walter_dto import WalterIntroduceQuery, WalterIntroduceResult
 
 
-class WalterPgRepository(WalterRepository):
+class WalterRepository(WalterPort):
     def __init__(self, db: AsyncSession) -> None:
         self._db = db
 

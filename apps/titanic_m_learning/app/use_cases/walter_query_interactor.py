@@ -1,15 +1,15 @@
-from titanic_m_learning.app.dtos.walter_dto import (
+﻿from titanic_m_learning.app.dtos.walter_dto import (
     WalterTableQueryResult,
     WalterPassengerQuery,
     WalterIntroduceQuery,
     WalterIntroduceResult,
 )
 from titanic_m_learning.app.ports.input.walter_use_case import WalterUseCase
-from titanic_m_learning.app.ports.output.walter_repository import WalterRepository
+from titanic_m_learning.app.ports.output.walter_port import WalterPort
 
 
 class WalterQueryInteractor(WalterUseCase):
-    def __init__(self, repository: WalterRepository) -> None:
+    def __init__(self, repository: WalterPort) -> None:
         self._repository = repository
 
     async def find_all(self) -> WalterTableQueryResult:

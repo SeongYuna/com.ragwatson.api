@@ -1,10 +1,10 @@
-from abc import ABC, abstractmethod
+﻿from abc import ABC, abstractmethod
 
 from titanic_m_learning.app.dtos.smith_dto import SmithStatsResult
 from titanic_m_learning.app.dtos.smith_dto import SmithIntroduceQuery, SmithIntroduceResult
 from titanic_m_learning.app.dtos.smith_dto import SmithChatQuery, SmithChatResult
 
-class SmithRepository(ABC):
+class SmithPort(ABC):
     @abstractmethod
     async def fetch_summary(self) -> SmithStatsResult:
         ...

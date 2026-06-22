@@ -1,14 +1,14 @@
-from sqlalchemy import select
+﻿from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from titanic_m_learning.adapter.outbound.mappers.jack_orm_mapper import person_booking_to_jack_query
 from titanic_m_learning.adapter.outbound.orm.person_orm import PersonORM
 from titanic_m_learning.app.dtos.jack_dto import JackIntroduceQuery, JackIntroduceResult, JackPassengerQuery, JackTrainRow
-from titanic_m_learning.app.ports.output.jack_repository import JackRepository
+from titanic_m_learning.app.ports.output.jack_port import JackPort
 
 
-class JackQueryPgRepository(JackRepository):
+class JackQueryRepository(JackPort):
     def __init__(self, db: AsyncSession) -> None:
         self._db = db
 

@@ -1,35 +1,27 @@
-import io
+﻿import io
 from typing import Optional
 
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from titanic_m_learning.adapter.inbound.api.schemas.hartley_query_schema import HartleyIntroduceResponse, HartleyIntroduceSchema
-from titanic_m_learning.app.dtos.hartley_dto import HartleyIntroduceQuery, HartleyPassengerQuery
+from titanic_m_learning.app.dtos.hartley_dto import HartleyIntroduceQuery, HartleyIntroduceResult, HartleyPassengerQuery
 from titanic_m_learning.app.ports.input.hartley_use_case import HartleyUseCase
-from titanic_m_learning.app.ports.output.hartley_repository import HartleyRepository
+from titanic_m_learning.app.ports.output.hartley_port import HartleyPort
 
 matplotlib.use("Agg")  # GUI 없는 서버 환경 — 반드시 pyplot import 전에 설정
 
 
 class HartleyQueryInteractor(HartleyUseCase):
-    def __init__(self, repository: HartleyRepository) -> None:
+    def __init__(self, repository: HartleyPort) -> None:
         self._repository = repository
         self._heatmap_cache: Optional[bytes] = None  # 최초 1회 생성 후 재사용
 
     async def sample(self, *, count: int = 10) -> list[HartleyPassengerQuery]:
         return await self._repository.sample(count=count)
 
-    async def introduce_myself(self, schema: HartleyIntroduceSchema) -> HartleyIntroduceResponse:
-        result = await self._repository.introduce_myself(
-            HartleyIntroduceQuery(id=schema.id, name=schema.name)
-        )
-        return HartleyIntroduceResponse(
-            id=result.id,
-            name=result.name,
-            message=result.message,
-        )
+    async def introduce_myself(self, query: HartleyIntroduceQuery) -> HartleyIntroduceResult:
+        return await self._repository.introduce_myself(query)
 
     async def get_correlation_heatmap(self) -> bytes:
         """생존 상관관계 히트맵 PNG를 반환한다. 최초 1회 생성 후 메모리 캐시."""

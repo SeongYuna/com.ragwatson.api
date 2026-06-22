@@ -1,10 +1,10 @@
-from abc import ABC, abstractmethod
+﻿from abc import ABC, abstractmethod
 
 from titanic_m_learning.app.dtos.james_cmd_dto import JamesPassengerCommand
 from titanic_m_learning.app.dtos.james_cmd_dto import JamesIntroduceQuery, JamesIntroduceResult
 
 
-class JamesCmdRepository(ABC):
+class JamesCmdPort(ABC):
     @abstractmethod
     async def save_all(self, commands: list[JamesPassengerCommand]) -> None:
         """PersonCommand + BookingCommand 목록을 저장소에 저장한다."""
