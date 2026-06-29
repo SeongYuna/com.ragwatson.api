@@ -1,0 +1,151 @@
+# backend/pyproject.toml
+#
+# 하네스 엔지니어링 + 스타 토폴로지 정적 분석 설정
+#
+# [역할]
+# - Ruff: 코드 품질·스타일 강제 (Black 대체 포함)
+# - mypy: 허브·스포크 포트(ABC) 타입 계약 엄격 검증
+# - import-linter: spoke→spoke 직접 참조 금지, spoke→hub만 허용
+#
+# [스타 토폴로지 무결성 원칙]
+# 스포크가 허브를 우회해 다른 스포크를 직접 import하는 순간
+# 온톨로지 그래프가 사이클을 형성할 수 있으므로, CI에서 자동 차단한다.
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+src = ["apps", "core"]
+
+[tool.ruff.lint]
+# E/W: pycodestyle, F: pyflakes, I: isort, UP: pyupgrade
+# B: flake8-bugbear (잠재 버그), C90: McCabe 복잡도
+# TID: flake8-tidy-imports (허브-스포크 간 불필요한 와일드카드 import 방지)
+select = ["E", "W", "F", "I", "UP", "B", "C90", "TID"]
+ignore = [
+    "E501",   # line-length는 formatter가 처리
+    "B008",   # FastAPI Depends() 패턴 허용
+]
+
+[tool.ruff.lint.isort]
+# 허브(starcraft)는 항상 first-party 최상단에 정렬 → 의존 방향 가시성 확보
+known-first-party = ["starcraft", "core"]
+known-local-folder = [
+    "titanic_m_learning", "paper_lens", "silicon_valley",
+    "inception_vision", "imitation_game_deep_learning",
+    "doro", "gateway_friday_13th",
+]
+section-order = [
+    "future", "standard-library", "third-party",
+    "first-party", "local-folder", "local",
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+
+# ---------------------------------------------------------------------------
+# mypy — 포트(ABC) 타입 계약 엄격 검증
+# 허브의 output port와 스포크가 구현하는 ABC가 타입 안전하게 연결되도록 강제.
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.13"
+strict = true
+# 스포크가 허브 포트를 구현할 때 반환 타입 불일치를 즉시 탐지
+warn_return_any = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+disallow_any_generics = true
+# 외부 라이브러리 stub 없어도 에러 발생
+ignore_missing_imports = false
+
+[[tool.mypy.overrides]]
+# SQLAlchemy·FastAPI 등 stub 미제공 라이브러리는 예외 허용
+module = [
+    "sqlalchemy.*",
+    "alembic.*",
+    "google.generativeai.*",
+]
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------------------
+# import-linter — 스타 토폴로지 의존성 규칙 강제
+#
+# 규칙 요약:
+#   spoke → hub.app.ports.*  (허용: 허브 공개 포트만 참조)
+#   hub   → spoke.*          (금지: 허브는 스포크 내부 모름)
+#   spoke → spoke.*          (금지: 스포크 간 직접 참조)
+#
+# CI에서 `lint-imports` 명령으로 자동 검사.
+# ---------------------------------------------------------------------------
+[tool.importlinter]
+root_packages = [
+    "starcraft",
+    "titanic_m_learning",
+    "paper_lens",
+    "silicon_valley",
+    "inception_vision",
+    "imitation_game_deep_learning",
+    "doro",
+    "gateway_friday_13th",
+    "core",
+]
+
+[[tool.importlinter.contracts]]
+name = "Spokes must not import each other directly"
+type = "forbidden"
+# 각 스포크는 다른 스포크를 직접 import할 수 없음
+source_modules = [
+    "titanic_m_learning",
+    "paper_lens",
+    "silicon_valley",
+    "inception_vision",
+    "imitation_game_deep_learning",
+    "doro",
+    "gateway_friday_13th",
+]
+forbidden_modules = [
+    "titanic_m_learning",
+    "paper_lens",
+    "silicon_valley",
+    "inception_vision",
+    "imitation_game_deep_learning",
+    "doro",
+    "gateway_friday_13th",
+]
+
+[[tool.importlinter.contracts]]
+name = "Hub must not import spoke internals"
+type = "forbidden"
+source_modules = ["starcraft"]
+# 허브는 스포크의 app/domain/adapter 내부를 직접 참조 금지
+# (스포크가 허브 포트를 구현하는 방향이 올바른 의존 방향)
+forbidden_modules = [
+    "titanic_m_learning.adapter",
+    "titanic_m_learning.domain",
+    "paper_lens.adapter",
+    "paper_lens.domain",
+    "silicon_valley.adapter",
+    "silicon_valley.domain",
+    "inception_vision.adapter",
+    "inception_vision.domain",
+    "imitation_game_deep_learning.adapter",
+    "imitation_game_deep_learning.domain",
+    "doro.adapter",
+    "doro.domain",
+    "gateway_friday_13th.adapter",
+    "gateway_friday_13th.domain",
+]
+
+[[tool.importlinter.contracts]]
+name = "Spokes may only reference hub public ports"
+type = "layers"
+# 스포크 → 허브 참조는 hub.app.ports.* 경로만 허용 (공개 포트)
+# 이 계약은 현재 구조적 제약을 문서화하며, 위반 시 별도 forbidden 계약으로 차단.
+layers = [
+    "starcraft.app.ports",
+    "core",
+]

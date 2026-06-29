@@ -4,6 +4,50 @@
 
 ---
 
+## Context & Goal
+
+현재 프로젝트는 **모듈러 모놀리식(Modular Monolith)** 구조에 **하네스 엔지니어링(Harness Engineering)** 과 **스타 토폴로지(Star Topology / Hub-and-Spoke)** 를 결합한 온톨로지 시스템을 구축하는 것을 목표로 한다.
+
+- **기존 구조:** 각 앱(`apps/*`)이 동등한 위상의 선형 모듈로 존재하는 클린 아키텍처.
+- **전환 목표:** `apps/starcraft`를 **중앙 허브(Hub)** 로, 나머지 앱들을 **스포크(Spoke)** 로 재편하는 비선형 스타 토폴로지.
+- **하네스의 역할:** 코드·문서·의존성의 무결성을 린터·타입체커·검증 스크립트·CI로 엄격하게 강제한다.
+
+이 패러다임 전환은 선형 계층(Clean Architecture)을 **폐기하지 않고**, 각 허브·스포크 내부는 여전히 기존 헥사고날 + 클린 + DDD 레이어 규칙을 준수한다.
+
+---
+
+## 스타 토폴로지 아키텍처 (Hub-and-Spoke)
+
+### 허브와 스포크 역할
+
+| 구분 | 모듈 | 역할 |
+|------|------|------|
+| **Hub** | `apps/starcraft` | 핵심 온톨로지 모델, 컨텍스트 라우팅, 전역 상태·인덱스 관리, 하네스 엔진 |
+| **Spoke** | `apps/titanic_m_learning`, `apps/paper_lens`, `apps/silicon_valley`, `apps/inception_vision`, `apps/imitation_game_deep_learning`, `apps/doro`, `apps/gateway_friday_13th` | 개별 도메인 지식 모듈, 허브를 통해서만 상호작용 |
+
+### 의존성 규칙 (하네스 핵심)
+
+```
+spoke → hub (허용: 스포크는 허브의 공개 포트만 참조)
+hub   → spoke (금지: 허브는 스포크 내부를 직접 참조하지 않음)
+spoke → spoke (금지: 스포크 간 직접 참조 엄격 금지)
+```
+
+- 스포크가 다른 스포크의 기능이 필요하면 **반드시 허브의 포트(ABC)를 통해** 간접 호출한다.
+- 위 규칙은 `import-linter`(`backend/pyproject.toml`)와 `scripts/validate_harness.py`로 자동 검증된다.
+
+### 설정 파일 위치
+
+| 파일 | 목적 |
+|------|------|
+| `backend/pyproject.toml` | Ruff(린트·포맷), mypy(타입), import-linter(의존성 규칙) |
+| `.github/workflows/harness-ci.yml` | 린트·타입·하네스 검증 자동화 |
+| `backend/.markdownlint.json` | MD 온톨로지 노드 구조 검증 |
+| `.prettierrc` | MD 파일 일관 포맷팅 |
+| `backend/scripts/validate_harness.py` | Hub-Spoke 토폴로지 위반·고립 노드 검사 |
+
+---
+
 ## 5. 하네스 엔지니어링 — Wiki + LLM PKS
 
 카파시식 하네스는 **프롬프트만**이 아니라 **지식·경계·검증**을 환경에 고정하는 것이다. 이 저장소는 **Wiki + LLM PKS(Project Knowledge System)** 로 그 지식 계층을 구현한다.
@@ -122,9 +166,16 @@ def get_X_use_case(
 
 ### 현재 바운디드 컨텍스트
 
-| 앱 | 경로 | 비고 |
-|----|------|------|
-| **Titanic ML** | `backend/apps/titanic_m_learning/` | 타이타닉 데이터 분석 + Smith AI 채팅 |
+| 앱 | 경로 | 역할 | 비고 |
+|----|------|------|------|
+| **Starcraft** | `backend/apps/starcraft/` | **Hub** | 온톨로지 허브, 컨텍스트 라우팅, 하네스 엔진 |
+| **Titanic ML** | `backend/apps/titanic_m_learning/` | Spoke | 타이타닉 데이터 분석 + Smith AI 채팅 |
+| **Paper Lens** | `backend/apps/paper_lens/` | Spoke | 논문 지식 도메인 |
+| **Silicon Valley** | `backend/apps/silicon_valley/` | Spoke | 실리콘밸리 도메인 |
+| **Inception Vision** | `backend/apps/inception_vision/` | Spoke | 비전 AI 도메인 |
+| **Imitation Game** | `backend/apps/imitation_game_deep_learning/` | Spoke | 딥러닝 도메인 |
+| **Doro** | `backend/apps/doro/` | Spoke | — |
+| **Gateway Friday 13th** | `backend/apps/gateway_friday_13th/` | Spoke | API 게이트웨이 도메인 |
 
 ### 앱별 참고 구현
 
@@ -134,11 +185,12 @@ def get_X_use_case(
 |----|------|
 | Titanic ML | [`apps/titanic_m_learning/_docs/CLAUDE.md`](apps/titanic_m_learning/_docs/CLAUDE.md) |
 
-세부 DB 규칙(PK `id` 정수 등)은 `vault/backend/entity-rules.md`를 따른다.
+세부 DB 규칙(PK `id` 정수 등)은 `backend/_claude/ENTITY_RULES.md`를 따른다.
 
 ---
 
 ## 문서 맵 (그래프 링크)
 
 [[backend/README]]
-[[vault/backend/CLAUDE]]
+[[backend/_claude/CLAUDE]]
+[[backend/apps/titanic_m_learning/_docs/CLAUDE]]

@@ -1,17 +1,17 @@
-﻿from core.database import get_db
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from silicon_valley.adapter.outbound.pg.piper_hendricks_ceo_pg_repository import PiperHendricksCeoRepository
+from core.database import get_db
+from silicon_valley.adapter.outbound.repositories.piper_hendricks_ceo_repository import PiperHendricksCeoQueryRepository
 from silicon_valley.app.ports.input.piper_hendricks_ceo_use_case import PiperHendricksCeoUseCase
-from silicon_valley.app.ports.output.piper_hendricks_ceo_repository import PiperHendricksCeoRepository
+from silicon_valley.app.ports.output.piper_hendricks_ceo_port import PiperHendricksCeoRepository
 from silicon_valley.app.use_cases.piper_hendricks_ceo_interactor import PiperHendricksCeoInteractor
 
 
 def get_piper_hendricks_ceo_repository(
     db: AsyncSession = Depends(get_db),
 ) -> PiperHendricksCeoRepository:
-    return PiperHendricksCeoPgRepository(db=db)
+    return PiperHendricksCeoQueryRepository(session=db)
 
 
 def get_piper_hendricks_ceo_use_case(

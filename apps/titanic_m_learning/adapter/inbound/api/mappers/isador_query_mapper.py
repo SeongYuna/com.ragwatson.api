@@ -1,2 +1,0 @@
-from titanic_m_learning.adapter.inbound.api.schemas.isador_query_schema import IsadorIntroduceSchema
-from titanic_m_learning.app.dtos.isador_dto import IsadorIntroduceQuery

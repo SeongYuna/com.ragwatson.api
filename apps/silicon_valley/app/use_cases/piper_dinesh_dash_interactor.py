@@ -3,7 +3,7 @@ from silicon_valley.app.dtos.piper_dinesh_dash_dto import (
     PiperDineshDashIntroduceResult,
 )
 from silicon_valley.app.ports.input.piper_dinesh_dash_use_case import PiperDineshDashUseCase
-from silicon_valley.app.ports.output.piper_dinesh_dash_repository import PiperDineshDashRepository
+from silicon_valley.app.ports.output.piper_dinesh_dash_port import PiperDineshDashRepository
 
 
 class PiperDineshDashInteractor(PiperDineshDashUseCase):

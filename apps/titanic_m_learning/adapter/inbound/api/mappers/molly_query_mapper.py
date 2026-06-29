@@ -1,2 +1,0 @@
-from titanic_m_learning.adapter.inbound.api.schemas.molly_query_schema import MollyIntroduceSchema
-from titanic_m_learning.app.dtos.molly_dto import MollyIntroduceQuery

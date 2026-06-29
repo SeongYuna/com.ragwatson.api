@@ -3,7 +3,7 @@ from silicon_valley.app.dtos.piper_dunn_coo_dto import (
     PiperDunnCooIntroduceResult,
 )
 from silicon_valley.app.ports.input.piper_dunn_coo_use_case import PiperDunnCooUseCase
-from silicon_valley.app.ports.output.piper_dunn_coo_repository import PiperDunnCooRepository
+from silicon_valley.app.ports.output.piper_dunn_coo_port import PiperDunnCooRepository
 
 
 class PiperDunnCooInteractor(PiperDunnCooUseCase):

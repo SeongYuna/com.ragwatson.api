@@ -1,0 +1,28 @@
+from fastapi import APIRouter
+
+from titanic_machine_learning.adapter.inbound.api.v1.andrew_query_router import andrew_query_router
+from titanic_machine_learning.adapter.inbound.api.v1.caledon_query_router import cal_query_router
+from titanic_machine_learning.adapter.inbound.api.v1.hartley_query_router import hartley_query_router
+from titanic_machine_learning.adapter.inbound.api.v1.isador_query_router import isador_query_router
+from titanic_machine_learning.adapter.inbound.api.v1.jack_query_router import jack_query_router
+from titanic_machine_learning.adapter.inbound.api.v1.james_cmd_router import james_cmd_router
+from titanic_machine_learning.adapter.inbound.api.v1.lowe_query_router import lowe_query_router
+from titanic_machine_learning.adapter.inbound.api.v1.molly_query_router import molly_query_router
+from titanic_machine_learning.adapter.inbound.api.v1.rose_query_router import rose_query_router
+from titanic_machine_learning.adapter.inbound.api.v1.ruth_query_router import ruth_query_router
+from titanic_machine_learning.adapter.inbound.api.v1.smith_query_router import smith_query_router
+from titanic_machine_learning.adapter.inbound.api.v1.walter_query_router import walter_query_router
+
+titanic_router = APIRouter()
+titanic_router.include_router(james_cmd_router)
+titanic_router.include_router(walter_query_router)
+titanic_router.include_router(andrew_query_router)
+titanic_router.include_router(cal_query_router)
+titanic_router.include_router(jack_query_router)
+titanic_router.include_router(rose_query_router)
+titanic_router.include_router(ruth_query_router)
+titanic_router.include_router(smith_query_router)
+titanic_router.include_router(isador_query_router)
+titanic_router.include_router(hartley_query_router)
+titanic_router.include_router(lowe_query_router)
+titanic_router.include_router(molly_query_router)

@@ -1,0 +1,2 @@
+from titanic_machine_learning.adapter.inbound.api.schemas.ruth_query_schema import RuthIntroduceSchema
+from titanic_machine_learning.app.dtos.ruth_dto import RuthIntroduceQuery

@@ -3,7 +3,7 @@ from silicon_valley.app.dtos.piper_hendricks_ceo_dto import (
     PiperHendricksCeoIntroduceResult,
 )
 from silicon_valley.app.ports.input.piper_hendricks_ceo_use_case import PiperHendricksCeoUseCase
-from silicon_valley.app.ports.output.piper_hendricks_ceo_repository import PiperHendricksCeoRepository
+from silicon_valley.app.ports.output.piper_hendricks_ceo_port import PiperHendricksCeoRepository
 
 
 class PiperHendricksCeoInteractor(PiperHendricksCeoUseCase):

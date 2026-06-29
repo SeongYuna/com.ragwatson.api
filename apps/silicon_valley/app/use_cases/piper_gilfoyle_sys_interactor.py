@@ -3,7 +3,7 @@ from silicon_valley.app.dtos.piper_gilfoyle_sys_dto import (
     PiperGilfoyleSysIntroduceResult,
 )
 from silicon_valley.app.ports.input.piper_gilfoyle_sys_use_case import PiperGilfoyleSysUseCase
-from silicon_valley.app.ports.output.piper_gilfoyle_sys_repository import PiperGilfoyleSysRepository
+from silicon_valley.app.ports.output.piper_gilfoyle_sys_port import PiperGilfoyleSysRepository
 
 
 class PiperGilfoyleSysInteractor(PiperGilfoyleSysUseCase):
