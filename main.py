@@ -38,7 +38,10 @@ from core.database import get_db, init_db
 from gateway_kingdom_hearts.adapter.inbound.api.v1.user_cmd_router import user_cmd_router
 from gateway_kingdom_hearts.adapter.outbound.orm import user_orm  # noqa: F401 — Base.metadata에 UserORM 등록
 from weather_service import fetch_current_weather
-from teaching_assistant.adapter.inbound.api.v1.email_router import router as email_router
+from teaching_assistant_spoke.adapter.inbound.api.v1.email_router import router as email_router
+from starcraft_hub.adapter.inbound.api.v1.classify_router import router as classify_router
+from teaching_assistant_spoke.adapter.inbound.api.v1.receiver_router import router as receiver_router
+from teaching_assistant_spoke.adapter.outbound.orm import received_email_orm  # noqa: F401 — Base.metadata 등록
 
 
 app = FastAPI(title="Main App")
@@ -62,6 +65,8 @@ app.include_router(titanic_router, prefix="/api")
 app.include_router(silicon_valley_router, prefix="/api")
 app.include_router(user_cmd_router)
 app.include_router(email_router, prefix="/api")
+app.include_router(classify_router, prefix="/api")
+app.include_router(receiver_router, prefix="/api")
 
 
 class LoginRequest(BaseModel):

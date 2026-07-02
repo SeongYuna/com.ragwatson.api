@@ -5,30 +5,29 @@ from __future__ import annotations
 from typing import AsyncIterator
 
 import ollama
-from pydantic import BaseModel, Field
+
+from core.lol.orchestrator_port import (
+    OrchestratorMessage,
+    OrchestratorPort,
+    OrchestratorRequest,
+    OrchestratorResponse,
+)
 
 _DEFAULT_MODEL = "exaone3.5:2.4b"
 _DEFAULT_HOST = "http://localhost:11434"
 
-
-class OrchestratorMessage(BaseModel):
-    role: str  # "system" | "user" | "assistant"
-    content: str
-
-
-class OrchestratorRequest(BaseModel):
-    messages: list[OrchestratorMessage] = Field(..., min_length=1)
-    model: str = _DEFAULT_MODEL
-    temperature: float = Field(default=0.7, ge=0.0, le=2.0)
-
-
-class OrchestratorResponse(BaseModel):
-    content: str
-    model: str
-    done: bool = True
+# re-export — 기존 import 경로 호환
+__all__ = [
+    "FakerOrchestrator",
+    "OrchestratorMessage",
+    "OrchestratorPort",
+    "OrchestratorRequest",
+    "OrchestratorResponse",
+    "faker_orchestrator",
+]
 
 
-class FakerOrchestrator:
+class FakerOrchestrator(OrchestratorPort):
     """Exaone 3.5:2.4b를 Ollama를 통해 실행하는 로컬 LLM 오케스트레이터."""
 
     def __init__(
@@ -56,9 +55,7 @@ class FakerOrchestrator:
             done=response.done or False,
         )
 
-    async def stream(
-        self, request: OrchestratorRequest
-    ) -> AsyncIterator[str]:
+    async def stream(self, request: OrchestratorRequest) -> AsyncIterator[str]:
         """청크 단위로 스트리밍한다."""
         async for chunk in await self._client.chat(
             model=request.model,

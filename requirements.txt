@@ -20,6 +20,7 @@ annotated-types==0.7.0
 anyio==4.13.0
 click==8.3.3
 colorama==0.4.6
+email-validator==2.2.0
 fastapi==0.136.1
 google-generativeai==0.8.6
 h11==0.16.0
@@ -32,6 +33,7 @@ seaborn==0.13.2
 scikit-learn==1.8.0
 kiwipiepy==0.23.1
 ollama==0.6.2
+pgvector==0.3.6
 # torch==2.12.0+cu126  # GPU 딥러닝 전용 — Docker 빌드 제외 (로컬 torch_env conda에서만 사용)
 asyncpg==0.30.0
 psycopg[binary]==3.3.4
