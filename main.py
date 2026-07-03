@@ -33,6 +33,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.matrix_API_key.app.keymaker_api import ChatRequest, keymaker
 from titanic_machine_learning.adapter.inbound.api import titanic_router
 from silicon_valley.adapter.inbound.api import silicon_valley_router
+from lenna_vision.adapter.inbound.api import lenna_vision_router
 from titanic_machine_learning.adapter.outbound.orm import BookingORM, PersonORM  # noqa: F401 — Base.metadata
 from core.database import get_db, init_db
 from gateway_kingdom_hearts.adapter.inbound.api.v1.user_cmd_router import user_cmd_router
@@ -63,6 +64,7 @@ app.add_middleware(
 
 app.include_router(titanic_router, prefix="/api")
 app.include_router(silicon_valley_router, prefix="/api")
+app.include_router(lenna_vision_router, prefix="/api")
 app.include_router(user_cmd_router)
 app.include_router(email_router, prefix="/api")
 app.include_router(classify_router, prefix="/api")

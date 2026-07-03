@@ -36,6 +36,7 @@ ollama==0.6.2
 pgvector==0.3.6
 # torch==2.12.0+cu126  # GPU 딥러닝 전용 — Docker 빌드 제외 (로컬 torch_env conda에서만 사용)
 asyncpg==0.30.0
+boto3==1.35.68
 psycopg[binary]==3.3.4
 pydantic==2.13.4
 pydantic-core==2.46.4
