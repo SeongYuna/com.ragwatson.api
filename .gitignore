@@ -39,6 +39,10 @@ __pycache__/
 *$py.class
 *.so
 
+# 학습된 모델 아티팩트 (레포에 커밋하지 않음)
+*.pkl
+*.pt
+
 # 패키징 / 빌드
 build/
 dist/
@@ -127,3 +131,6 @@ tmp/
 temp/
 *.tmp
 *.bak
+
+# 학습용 데이터셋 (레포에 커밋하지 않음)
+apps/lenna_vision/resources/yolo_train/

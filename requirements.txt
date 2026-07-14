@@ -34,7 +34,13 @@ scikit-learn==1.8.0
 kiwipiepy==0.23.1
 ollama==0.6.2
 pgvector==0.3.6
-# torch==2.12.0+cu126  # GPU 딥러닝 전용 — Docker 빌드 제외 (로컬 torch_env conda에서만 사용)
+# ── YOLO — 로컬 GPU (CUDA 12.6) ──
+# pip install 시 반드시 아래 인덱스 URL을 지정해야 cu126 빌드가 설치됨:
+# pip install torch==2.12.1+cu126 torchvision==0.27.1+cu126 --index-url https://download.pytorch.org/whl/cu126
+torch==2.12.1+cu126
+torchvision==0.27.1+cu126
+opencv-python==4.11.0.86
+ultralytics==8.3.159
 asyncpg==0.30.0
 boto3==1.35.68
 psycopg[binary]==3.3.4
