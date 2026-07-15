@@ -22,8 +22,8 @@
 
 | 구분 | 모듈 | 역할 |
 |------|------|------|
-| **Hub** | `apps/starcraft` | 핵심 온톨로지 모델, 컨텍스트 라우팅, 전역 상태·인덱스 관리, 하네스 엔진 |
-| **Spoke** | `apps/titanic_m_learning`, `apps/paper_lens`, `apps/silicon_valley`, `apps/inception_vision`, `apps/imitation_game_deep_learning`, `apps/doro`, `apps/gateway_friday_13th` | 개별 도메인 지식 모듈, 허브를 통해서만 상호작용 |
+| **Hub** | `apps/starcraft_hub` | 핵심 온톨로지 모델, 컨텍스트 라우팅, 전역 상태·인덱스 관리, 하네스 엔진 |
+| **Spoke** | `apps/titanic_machine_learning`, `apps/paper_lens`, `apps/silicon_valley`, `apps/lenna_vision`, `apps/dumb_and_dumber`, `apps/doro`, `apps/gateway_kingdom_hearts`, `apps/teaching_assistant_spoke` | 개별 도메인 지식 모듈, 허브를 통해서만 상호작용 |
 
 ### 의존성 규칙 (하네스 핵심)
 
@@ -35,6 +35,7 @@ spoke → spoke (금지: 스포크 간 직접 참조 엄격 금지)
 
 - 스포크가 다른 스포크의 기능이 필요하면 **반드시 허브의 포트(ABC)를 통해** 간접 호출한다.
 - 위 규칙은 `import-linter`(`backend/pyproject.toml`)와 `scripts/validate_harness.py`로 자동 검증된다.
+- `core/*`(`core.database`, `core.lol`, `core.matrix_API_key` 등)는 허브·스포크 어느 쪽에도 속하지 않는 **공유 커널**이다. 위 hub/spoke 의존성 규칙 대상이 아니며, 어떤 앱이든 자유롭게 임포트할 수 있다.
 
 ### 설정 파일 위치
 
@@ -168,14 +169,23 @@ def get_X_use_case(
 
 | 앱 | 경로 | 역할 | 비고 |
 |----|------|------|------|
-| **Starcraft** | `backend/apps/starcraft/` | **Hub** | 온톨로지 허브, 컨텍스트 라우팅, 하네스 엔진 |
-| **Titanic ML** | `backend/apps/titanic_m_learning/` | Spoke | 타이타닉 데이터 분석 + Smith AI 채팅 |
+| **Starcraft Hub** | `backend/apps/starcraft_hub/` | **Hub** | 온톨로지 허브, 컨텍스트 라우팅, 하네스 엔진 |
+| **Titanic ML** | `backend/apps/titanic_machine_learning/` | Spoke | 타이타닉 데이터 분석 + Smith AI 채팅 |
 | **Paper Lens** | `backend/apps/paper_lens/` | Spoke | 논문 지식 도메인 |
-| **Silicon Valley** | `backend/apps/silicon_valley/` | Spoke | 실리콘밸리 도메인 |
-| **Inception Vision** | `backend/apps/inception_vision/` | Spoke | 비전 AI 도메인 |
-| **Imitation Game** | `backend/apps/imitation_game_deep_learning/` | Spoke | 딥러닝 도메인 |
-| **Doro** | `backend/apps/doro/` | Spoke | — |
-| **Gateway Friday 13th** | `backend/apps/gateway_friday_13th/` | Spoke | API 게이트웨이 도메인 |
+| **Silicon Valley** | `backend/apps/silicon_valley/` | Spoke | 실리콘밸리 도메인 (HR/COO 등 캐스팅 기반 쿼리) |
+| **Lenna Vision** | `backend/apps/lenna_vision/` | Spoke | 비전 AI 도메인 (YOLO/OpenCV) |
+| **Dumb and Dumber** | `backend/apps/dumb_and_dumber/` | Spoke | 딥러닝 도메인 |
+| **Doro** | `backend/apps/doro/` | Spoke | 디렉터/리더 로직 도메인 |
+| **Gateway Kingdom Hearts** | `backend/apps/gateway_kingdom_hearts/` | Spoke | API 게이트웨이/사용자 인증 도메인 |
+| **Teaching Assistant Spoke** | `backend/apps/teaching_assistant_spoke/` | Spoke | 교육 보조/이메일 워처 도메인 |
+
+### 공유 core 모듈
+
+| 모듈 | 경로 | 역할 |
+|------|------|------|
+| Database | `backend/core/database.py` | DB 세션·엔진 공통 설정 |
+| LOL (LLM Orchestrator) | `backend/core/lol/` | `OrchestratorPort` + Ollama 기반 로컬 LLM(`exaone3.5:2.4b`) 구현체. hub·spoke 모두 자유롭게 임포트 가능 |
+| Matrix API Key | `backend/core/matrix_API_key/` | 시스템 구성·자격 증명 등 공용 모듈 |
 
 ### 앱별 참고 구현
 
@@ -183,7 +193,8 @@ def get_X_use_case(
 
 | 앱 | 파일 |
 |----|------|
-| Titanic ML | [`apps/titanic_m_learning/_docs/CLAUDE.md`](apps/titanic_m_learning/_docs/CLAUDE.md) |
+| Titanic ML | [`apps/titanic_machine_learning/_docs/CLAUDE.md`](apps/titanic_machine_learning/_docs/CLAUDE.md) |
+| Teaching Assistant Spoke | [`apps/teaching_assistant_spoke/_docs/CLAUDE.md`](apps/teaching_assistant_spoke/_docs/CLAUDE.md) |
 
 세부 DB 규칙(PK `id` 정수 등)은 `backend/_claude/ENTITY_RULES.md`를 따른다.
 

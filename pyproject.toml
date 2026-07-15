@@ -27,12 +27,12 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-# 허브(starcraft)는 항상 first-party 최상단에 정렬 → 의존 방향 가시성 확보
-known-first-party = ["starcraft", "core"]
+# 허브(starcraft_hub)는 항상 first-party 최상단에 정렬 → 의존 방향 가시성 확보
+known-first-party = ["starcraft_hub", "core"]
 known-local-folder = [
-    "titanic_m_learning", "paper_lens", "silicon_valley",
-    "inception_vision", "imitation_game_deep_learning",
-    "doro", "gateway_friday_13th",
+    "titanic_machine_learning", "paper_lens", "silicon_valley",
+    "lenna_vision", "dumb_and_dumber",
+    "doro", "gateway_kingdom_hearts", "teaching_assistant_spoke",
 ]
 section-order = [
     "future", "standard-library", "third-party",
@@ -83,14 +83,15 @@ ignore_missing_imports = true
 # ---------------------------------------------------------------------------
 [tool.importlinter]
 root_packages = [
-    "starcraft",
-    "titanic_m_learning",
+    "starcraft_hub",
+    "titanic_machine_learning",
     "paper_lens",
     "silicon_valley",
-    "inception_vision",
-    "imitation_game_deep_learning",
+    "lenna_vision",
+    "dumb_and_dumber",
     "doro",
-    "gateway_friday_13th",
+    "gateway_kingdom_hearts",
+    "teaching_assistant_spoke",
     "core",
 ]
 
@@ -99,45 +100,49 @@ name = "Spokes must not import each other directly"
 type = "forbidden"
 # 각 스포크는 다른 스포크를 직접 import할 수 없음
 source_modules = [
-    "titanic_m_learning",
+    "titanic_machine_learning",
     "paper_lens",
     "silicon_valley",
-    "inception_vision",
-    "imitation_game_deep_learning",
+    "lenna_vision",
+    "dumb_and_dumber",
     "doro",
-    "gateway_friday_13th",
+    "gateway_kingdom_hearts",
+    "teaching_assistant_spoke",
 ]
 forbidden_modules = [
-    "titanic_m_learning",
+    "titanic_machine_learning",
     "paper_lens",
     "silicon_valley",
-    "inception_vision",
-    "imitation_game_deep_learning",
+    "lenna_vision",
+    "dumb_and_dumber",
     "doro",
-    "gateway_friday_13th",
+    "gateway_kingdom_hearts",
+    "teaching_assistant_spoke",
 ]
 
 [[tool.importlinter.contracts]]
 name = "Hub must not import spoke internals"
 type = "forbidden"
-source_modules = ["starcraft"]
+source_modules = ["starcraft_hub"]
 # 허브는 스포크의 app/domain/adapter 내부를 직접 참조 금지
 # (스포크가 허브 포트를 구현하는 방향이 올바른 의존 방향)
 forbidden_modules = [
-    "titanic_m_learning.adapter",
-    "titanic_m_learning.domain",
+    "titanic_machine_learning.adapter",
+    "titanic_machine_learning.domain",
     "paper_lens.adapter",
     "paper_lens.domain",
     "silicon_valley.adapter",
     "silicon_valley.domain",
-    "inception_vision.adapter",
-    "inception_vision.domain",
-    "imitation_game_deep_learning.adapter",
-    "imitation_game_deep_learning.domain",
+    "lenna_vision.adapter",
+    "lenna_vision.domain",
+    "dumb_and_dumber.adapter",
+    "dumb_and_dumber.domain",
     "doro.adapter",
     "doro.domain",
-    "gateway_friday_13th.adapter",
-    "gateway_friday_13th.domain",
+    "gateway_kingdom_hearts.adapter",
+    "gateway_kingdom_hearts.domain",
+    "teaching_assistant_spoke.adapter",
+    "teaching_assistant_spoke.domain",
 ]
 
 [[tool.importlinter.contracts]]
@@ -146,6 +151,6 @@ type = "layers"
 # 스포크 → 허브 참조는 hub.app.ports.* 경로만 허용 (공개 포트)
 # 이 계약은 현재 구조적 제약을 문서화하며, 위반 시 별도 forbidden 계약으로 차단.
 layers = [
-    "starcraft.app.ports",
+    "starcraft_hub.app.ports",
     "core",
 ]
