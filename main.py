@@ -41,6 +41,7 @@ from gateway_kingdom_hearts.adapter.outbound.orm import user_orm  # noqa: F401 �
 from weather_service import fetch_current_weather
 from teaching_assistant_spoke.adapter.inbound.api.v1.email_router import router as email_router
 from starcraft_hub.adapter.inbound.api.v1.classify_router import router as classify_router
+from starcraft_hub.adapter.inbound.api.v1.route_router import router as route_router
 from teaching_assistant_spoke.adapter.inbound.api.v1.receiver_router import router as receiver_router
 from teaching_assistant_spoke.adapter.outbound.orm import received_email_orm  # noqa: F401 — Base.metadata 등록
 
@@ -68,6 +69,7 @@ app.include_router(lenna_vision_router, prefix="/api")
 app.include_router(user_cmd_router)
 app.include_router(email_router, prefix="/api")
 app.include_router(classify_router, prefix="/api")
+app.include_router(route_router, prefix="/api")
 app.include_router(receiver_router, prefix="/api")
 
 
