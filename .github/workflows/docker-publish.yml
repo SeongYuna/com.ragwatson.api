@@ -32,11 +32,24 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push
+      - name: Build image (러너에 로드만, 아직 push 안 함)
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: true
+          push: false
+          load: true
           tags: seongyuna/backend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # push 전에 컨테이너를 실제로 띄우지 않고 import만 해봐서
+      # ModuleNotFoundError 등 런타임 전 잡을 수 있는 오류를 조기 검출한다.
+      - name: Import smoke test
+        run: |
+          docker run --rm \
+            -e DATABASE_URL=postgresql+asyncpg://smoke:smoke@localhost:5432/smoke \
+            -e TITANIC_DATABASE_URL=postgresql+asyncpg://smoke:smoke@localhost:5432/smoke \
+            seongyuna/backend:latest python3.13 -c "import main"
+
+      - name: Push to Docker Hub
+        run: docker push seongyuna/backend:latest
