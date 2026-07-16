@@ -68,6 +68,7 @@ module = [
     "sqlalchemy.*",
     "alembic.*",
     "google.generativeai.*",
+    "bs4.*",
 ]
 ignore_missing_imports = true
 

@@ -15,6 +15,10 @@ langchain-ollama==1.1.0
 # Starcraft Hub — Graph DB · Vector DB 어댑터
 neo4j==5.28.1
 qdrant-client==1.13.3
+# Starcraft Hub — Crawler/Scrapper 어댑터 (Redis 소스, HTML 파싱)
+redis==5.2.1
+httpx==0.28.1
+beautifulsoup4==4.12.3
 alembic==1.18.4
 annotated-types==0.7.0
 anyio==4.13.0

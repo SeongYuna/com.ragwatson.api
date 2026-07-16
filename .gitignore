@@ -134,3 +134,7 @@ temp/
 
 # 학습용 데이터셋 (레포에 커밋하지 않음)
 apps/lenna_vision/resources/yolo_train/
+
+# 크롤러/스크래퍼 결과물 (레포에 커밋하지 않음)
+resources/crawled/
+resources/scraped/
