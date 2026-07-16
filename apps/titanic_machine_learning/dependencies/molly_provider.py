@@ -1,6 +1,6 @@
-﻿from core.database import get_db
-from fastapi import Depends
+﻿from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from titanic_machine_learning.adapter.outbound.database import get_titanic_db
 
 from titanic_machine_learning.adapter.outbound.repositories.molly_query_repository import MollyQueryRepository
 from titanic_machine_learning.app.ports.input.molly_use_case import MollyUseCase
@@ -9,7 +9,7 @@ from titanic_machine_learning.app.use_cases.molly_query_interactor import MollyQ
 
 
 def get_molly_repository(
-        db: AsyncSession = Depends(get_db)
+        db: AsyncSession = Depends(get_titanic_db)
 ) -> MollyPort:
     return MollyQueryRepository(db=db)
 

@@ -7,7 +7,7 @@ DIP 원칙:
   - 세션은 core 의 get_db 에서 주입받는다 (AsyncSession).
 """
 
-from core.database import get_db
+from titanic_machine_learning.adapter.outbound.database import get_titanic_db
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,7 +18,7 @@ from titanic_machine_learning.app.use_cases.walter_query_interactor import Walte
 
 
 def get_walter_repository(
-        db: AsyncSession = Depends(get_db)
+        db: AsyncSession = Depends(get_titanic_db)
 ) -> WalterPort:
     return WalterRepository(db=db)
 

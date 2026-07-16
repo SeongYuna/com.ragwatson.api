@@ -4,10 +4,10 @@ kiwipiepy(형태소 분석) + ollama(EEVE-Korean 모델) 통합 테스트.
 
 pytest 실행 (ollama 서버 필요):
     cd backend
-    python -m pytest apps/titanic_m_learning/tests/test_korean_ai.py -m ollama -v -s
+    python -m pytest apps/titanic_machine_learning/tests/test_korean_ai.py -m ollama -v -s
 
 직접 실행:
-    python apps/titanic_m_learning/tests/test_korean_ai.py
+    python apps/titanic_machine_learning/tests/test_korean_ai.py
 """
 import sys
 from pathlib import Path

@@ -1,6 +1,6 @@
-﻿from core.database import get_db
-from fastapi import Depends
+﻿from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from titanic_machine_learning.adapter.outbound.database import get_titanic_db
 
 from titanic_machine_learning.adapter.outbound.repositories.hartley_query_repository import HartleyQueryRepository
 from titanic_machine_learning.app.ports.input.hartley_use_case import HartleyUseCase
@@ -9,7 +9,7 @@ from titanic_machine_learning.app.use_cases.hartley_query_interactor import Hart
 
 
 def get_hartley_repository(
-        db: AsyncSession = Depends(get_db)
+        db: AsyncSession = Depends(get_titanic_db)
 ) -> HartleyPort:
     return HartleyQueryRepository(db=db)
 

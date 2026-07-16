@@ -18,7 +18,7 @@ MD 파일의 Frontmatter(type, links 필드)를 파싱하여
 type: hub          # 또는 spoke
 title: Starcraft Hub
 links:
-  - titanic_m_learning/overview
+  - titanic_machine_learning/overview
 ---
 
 [실행]
