@@ -15,6 +15,7 @@ sys.path.insert(0, str(_APPS_ROOT))
 load_dotenv(_BACKEND_ROOT / ".env")
 
 from core.database import Base  # noqa: E402
+from auth import models as auth_models  # noqa: F401, E402
 from gateway_kingdom_hearts.adapter.outbound.orm import user_orm  # noqa: F401, E402
 from titanic_machine_learning.adapter.outbound.orm import BookingORM, PersonORM  # noqa: F401, E402
 
