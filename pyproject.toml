@@ -33,6 +33,7 @@ known-local-folder = [
     "titanic_machine_learning", "paper_lens", "silicon_valley",
     "lenna_vision", "dumb_and_dumber",
     "doro", "gateway_kingdom_hearts", "teaching_assistant_spoke",
+    "auth",
 ]
 section-order = [
     "future", "standard-library", "third-party",
@@ -93,6 +94,7 @@ root_packages = [
     "doro",
     "gateway_kingdom_hearts",
     "teaching_assistant_spoke",
+    "auth",
     "core",
 ]
 
@@ -145,6 +147,24 @@ forbidden_modules = [
     "teaching_assistant_spoke.adapter",
     "teaching_assistant_spoke.domain",
 ]
+
+[[tool.importlinter.contracts]]
+name = "auth is only imported by auth_main"
+type = "forbidden"
+# apps/auth는 별도 컨테이너(auth_main.py) 전용 — 허브·스포크는 core.dependencies를 통해서만
+# 인증 기능(Role, RoleChecker, get_current_user)을 쓴다.
+source_modules = [
+    "starcraft_hub",
+    "titanic_machine_learning",
+    "paper_lens",
+    "silicon_valley",
+    "lenna_vision",
+    "dumb_and_dumber",
+    "doro",
+    "gateway_kingdom_hearts",
+    "teaching_assistant_spoke",
+]
+forbidden_modules = ["auth"]
 
 [[tool.importlinter.contracts]]
 name = "Spokes may only reference hub public ports"
