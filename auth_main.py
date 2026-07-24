@@ -18,6 +18,7 @@ for _path in (_BACKEND_ROOT, _APPS_DIR):
 from fastapi import FastAPI
 
 from auth.router import router as auth_router
+from core.database import init_db
 
 app = FastAPI(
     title="RAG Tailor Auth",
@@ -26,6 +27,14 @@ app = FastAPI(
     openapi_url=None,
 )
 app.include_router(auth_router, prefix="/auth")
+
+
+@app.on_event("startup")
+async def on_startup() -> None:
+    # auth.router → repository → models 임포트 체인으로 AuthAccountORM이 이미
+    # Base.metadata에 등록된 상태 — alembic 마이그레이션을 깜빡해도 최소한
+    # 테이블은 자동 생성되게 하는 안전장치 (main.py와 동일한 패턴).
+    await init_db()
 
 
 @app.get("/healthz")
